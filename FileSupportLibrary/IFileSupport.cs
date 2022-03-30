@@ -1,0 +1,56 @@
+﻿using DatabaseDefinitions;
+
+namespace FileSupportLibrary;
+
+public interface IFileSupport
+{
+	public abstract string PathSeparator { get; set; }
+	public abstract string FileExtension { get; set; }
+	public abstract string InfoFile { get; set; }
+	public abstract int DefaultStartPage { get; set; }
+	public abstract string Workspace { get; set; }
+
+	public abstract bool ExistsTable(string name);
+
+	public abstract bool ExistsPage(string tableName, int page);
+
+	public abstract string[] AllTables();
+
+	public abstract int AllPages(string tableName, TableHead head);
+
+	public abstract bool GetInfo(string tableName, out TableHead head);
+
+	public abstract bool CreateTable(string tableName, TableHead head);
+
+	public abstract bool DeleteTable(string tableName);
+
+	public abstract int DeleteTables(string[] tableNames);
+
+	public abstract bool GetLines(string tableName, int page, out string[] lines);
+
+	public abstract bool IsPageEmpty(string tableName, int page);
+
+	public abstract int AllLines(string tableName, int page);
+
+	public abstract bool AppendLine(string tableName, int page, string line);
+
+	public abstract bool UpdateLine(string tableName, int page, string line, int number);
+
+	public abstract bool DeleteLine(string tableName, int page, int number);
+
+	public abstract int AppendLines(string tableName, int page, string[] lines);
+
+	public abstract int WriteLines(string tableName, int page, string[] lines);
+
+	public abstract int DeleteLines(string tableName, int page, int[] numbers);
+
+	public abstract bool DeletePage(string tableName, int page);
+
+	public abstract int DeletePages(string tableName, int[] pages);
+
+	public abstract bool DeletePageIfEmpty(string tableName, int page);
+
+	public abstract int DeletePagesIfEmpty(string tableName, int[] pages);
+
+	public abstract int DeleteAllEmptyPages(string tableName, TableHead head);
+}
