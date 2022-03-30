@@ -7,6 +7,7 @@ public class PropUdpateArgs<V> : EventArgs
     public int Id { get; init; }
     public V? Prop { get; init; }
 }
+
 public struct SeparatorCrate<V>
 {
     public PropSeparator<V> Separator { get; init; }
