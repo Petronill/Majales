@@ -14,7 +14,7 @@ class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTabl
     protected bool changed = false;
 
     public event BufferFlushedHandler? BufferFlushed;
-    protected void OnBufferFlushed(EventArgs args) => BufferFlushed?.Invoke(this, args);
+    protected virtual void OnBufferFlushed(EventArgs args) => BufferFlushed?.Invoke(this, args);
 
     public BufferedTable(string name, IFileSupport fileSupport, int bufferCount = 0, bool preload = false) : base(name, fileSupport, preload)
     {
@@ -26,7 +26,7 @@ class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTabl
         return (name, fileSupport) => new BufferedTable(name, fileSupport);
     }
 
-    protected void BufferDecrement()
+    protected virtual void BufferDecrement()
     {
         currentBuffer--;
         changed = true;
@@ -36,7 +36,7 @@ class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTabl
         }
     }
 
-    public void Flush()
+    public virtual void Flush()
     {
         if (changed)
         {
