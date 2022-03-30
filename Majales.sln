@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MajalesKonzole", "MajalesKo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayUtilsLibrary", "ArrayUtilsLibrary\ArrayUtilsLibrary.csproj", "{68882EB8-367F-4A3B-83DD-B7D6E59F1722}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseDefinitions", "DatabaseDefinitions\DatabaseDefinitions.csproj", "{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseDefinitions", "DatabaseDefinitions\DatabaseDefinitions.csproj", "{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDatabaseLibrary", "ClientDatabaseLibrary\ClientDatabaseLibrary.csproj", "{5F888EA9-E28A-4F94-973D-496EA5293B0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicalDatabaseLibrary", "LogicalDatabaseLibrary\LogicalDatabaseLibrary.csproj", "{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientLibrary", "ClientLibrary\ClientLibrary.csproj", "{5126E1E7-27D3-428E-A059-62B720D7FC36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +49,14 @@ Global
 		{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F888EA9-E28A-4F94-973D-496EA5293B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F888EA9-E28A-4F94-973D-496EA5293B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F888EA9-E28A-4F94-973D-496EA5293B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F888EA9-E28A-4F94-973D-496EA5293B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5126E1E7-27D3-428E-A059-62B720D7FC36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5126E1E7-27D3-428E-A059-62B720D7FC36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5126E1E7-27D3-428E-A059-62B720D7FC36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5126E1E7-27D3-428E-A059-62B720D7FC36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
