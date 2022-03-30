@@ -7,11 +7,33 @@ namespace DatabaseLibrary;
 
 public delegate T TableProvider<T>(string name, IFileSupport fileSupporter) where T : Table;
 
+public class TableUpdateArgs : EventArgs
+{
+    public string Name { get; init; }
+}
+
+public delegate void TableUpdatedHandler(object sender, TableUpdateArgs e);
+public delegate void DatabaseIndexReorganizationHandler(object sender, EventArgs e);
+
 public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerable<KeyValuePair<string, T>>, IQuietEnumerable<string, T> where T: Table
 {
     private readonly Dictionary<string, T> tables = new();
     protected IFileSupport fileSupporter;
     protected TableProvider<T> provider;
+
+    public event TableUpdatedHandler? TableCreated;
+    public event TableUpdatedHandler? TableUpdated;
+    public event TableUpdatedHandler? TableRequested;
+    public event TableUpdatedHandler? TableRemoved;
+    public event TableUpdatedHandler? TableDeleted;
+    public event DatabaseIndexReorganizationHandler? DatabaseIndexCleared;
+
+    protected void OnTableCreated(TableUpdateArgs args) => TableCreated?.Invoke(this, args);
+    protected void OnTableUpdated(TableUpdateArgs args) => TableUpdated?.Invoke(this, args);
+    protected void OnTableRequested(TableUpdateArgs args) => TableRequested?.Invoke(this, args);
+    protected void OnTableRemoved(TableUpdateArgs args) => TableRemoved?.Invoke(this, args);
+    protected void OnTableDeleted(TableUpdateArgs args) => TableDeleted?.Invoke(this, args);
+    protected void OnDatabaseIndexCleared(EventArgs args) => DatabaseIndexCleared?.Invoke(this, args);
 
     public DatabaseIndex(IFileSupport fileSupport, TableProvider<T> tableProvider)
     {
@@ -19,15 +41,58 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         provider = tableProvider;
     }
 
+    protected bool ContainsTable(string name)
+    {
+        return tables.ContainsKey(name);
+    }
+
+    protected bool ContainsTable(T table)
+    {
+        return tables.ContainsValue(table);
+    }
+
     public T? this[string name]
     {
         get
         {
-            if (tables.TryGetValue(name, out var table))
+            OnTableRequested(new TableUpdateArgs { Name = name });
+            if (ContainsTable(name))
             {
-                return table;
+                return tables[name];
             }
             return TryLoad(name);
+        }
+    }
+
+    public string? this[string name, int id]
+    {
+        get
+        {
+            return this[name]?[id];
+        }
+    }
+
+    public string? this[string name, string id]
+    {
+        get
+        {
+            return this[name]?[id];
+        }
+    }
+
+    public string? this[string name, int id, IPropIndex index]
+    {
+        get
+        {
+            return this[name]?[id, index];
+        }
+    }
+
+    public string? this[string name, string id, IPropIndex index]
+    {
+        get
+        {
+            return this[name]?[id, index];
         }
     }
 
@@ -36,6 +101,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         T? t = tables[tableName];
         if (t != null)
         {
+            OnTableUpdated(new TableUpdateArgs { Name = tableName });
             return t;
         }
         return Create(tableName, head);
@@ -52,6 +118,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         {
             try
             {
+                OnTableCreated(new TableUpdateArgs { Name = tableName });
                 return this[tableName];
             }
             catch (Exception)
@@ -68,6 +135,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         if (stara != null)
         {
             tables.Remove(tableName);
+            OnTableRemoved(new TableUpdateArgs { Name = tableName });
         }
         return stara;
     }
@@ -78,6 +146,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         if (stara != null && fileSupporter.DeleteTable(tableName))
         {
             tables.Remove(tableName);
+            OnTableDeleted(new TableUpdateArgs { Name = tableName });
         }
         return stara;
     }
@@ -120,6 +189,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
     public void Clear()
     {
         tables.Clear();
+        OnDatabaseIndexCleared(EventArgs.Empty);
     }
 
     public override string ToString()
