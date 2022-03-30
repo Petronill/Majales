@@ -51,6 +51,28 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return tables.ContainsValue(table);
     }
 
+    protected T? TryLoad(string name)
+    {
+        if (fileSupporter.ExistsTable(name))
+        {
+            try
+            {
+                T loaded = provider(name, fileSupporter);
+                if (tables.TryAdd(name, loaded))
+                {
+                    tables.Remove(name);
+                    tables.TryAdd(name, loaded);
+                }
+                return loaded;
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+        return null;
+    }
+
     public T? this[string name]
     {
         get
@@ -149,28 +171,6 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
             OnTableDeleted(new TableUpdateArgs { Name = tableName });
         }
         return stara;
-    }
-
-    private T? TryLoad(string name)
-    {
-        if (fileSupporter.ExistsTable(name))
-        {
-            try
-            {
-                T loaded = provider(name, fileSupporter);
-                if (tables.TryAdd(name, loaded))
-                {
-                    tables.Remove(name);
-                    tables.TryAdd(name, loaded);
-                }
-                return loaded;
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-        return null;
     }
 
     public int HowManyTables()

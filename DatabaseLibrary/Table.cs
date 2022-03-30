@@ -14,7 +14,7 @@ public class RowUpdateArgs : EventArgs
 public delegate void RowUpdatedHandler(object sender, RowUpdateArgs args);
 public delegate void TableReorganizationHandler(object sender, EventArgs args);
 
-public class Table : IEnumerable<Row>, IEquatable<Table>, IComparable<Table>
+public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>, IComparable<Table>
 {
     protected TableHead head;
     protected bool pageReady;
@@ -407,6 +407,15 @@ public class Table : IEnumerable<Row>, IEquatable<Table>, IComparable<Table>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public IEnumerator<Row> GetQuietEnumerator()
+    {
+        GetPageReady();
+        for (int i = 0; i < rows.Length; i++)
+        {
+            yield return new Row { Line = rows[i], Meta = new RowMeta { PageNumber = currentPage, LineNumber = i } };
+        }
     }
 
     public bool Equals(Table? other)
