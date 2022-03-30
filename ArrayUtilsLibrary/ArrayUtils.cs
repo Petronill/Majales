@@ -7,12 +7,22 @@ public static class ArrayUtils
         arr[arr.Length - 1] = elem;
     }
 
+    public static void Prepend<T>(ref T[] arr, T elem)
+    {
+        Array.Resize(ref arr, arr.Length + 1);
+        Array.Copy(arr, 0, arr, 1, arr.Length - 1);
+        arr[0] = elem;
+    }
+
     public static void Delete<T>(ref T[] arr, int i)
     {
-        for (int j = i; j < arr.Length;)
+        if (i >= 0 && i < arr.Length)
         {
-            arr[j] = arr[j++];
+            if (i < arr.Length - 1)
+            {
+                Array.Copy(arr, i + 1, arr, i, arr.Length - i - 1);
+            }
+            Array.Resize(ref arr, arr.Length - 1);
         }
-        Array.Resize(ref arr, arr.Length - 1);
     }
 }
