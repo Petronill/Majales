@@ -5,8 +5,8 @@ namespace FileSupportLibrary;
 public class FileSupporter : IFileSupport
 {
     protected string pthspr = "\\";   //path filename separator
-    protected string flext = ".txt";  //common file extension
-    protected string inffl = "info";  //info file
+    protected string flext = ".csv";  //common page file extension
+    protected string inffl = "info.bin";  //info file
     protected int defaultStartPage = 0;
     public string PathSeparator { get => pthspr; set => pthspr = value; }
     public string FileExtension { get => flext; set => flext = value; }
@@ -22,6 +22,11 @@ public class FileSupporter : IFileSupport
     protected string FullPageName(string tableName, int page)
     {
         return FullTableName(tableName) + pthspr + page + flext;
+    }
+
+    protected string FullInfofileName(string tableName)
+    {
+        return FullTableName(tableName) + pthspr + inffl;
     }
 
     protected string FullTableName(string tableName)
@@ -67,7 +72,7 @@ public class FileSupporter : IFileSupport
 
     public bool ExistsTable(string name)
     {
-        return ExistsDirectory(name) && ExistsFile(name + pthspr + inffl + flext);
+        return ExistsDirectory(name) && ExistsFile(name + pthspr + inffl);
     }
 
     public bool ExistsPage(string tableName, int page)
@@ -75,9 +80,9 @@ public class FileSupporter : IFileSupport
         return ExistsTable(tableName) && ExistsFile(tableName + pthspr + page + flext);
     }
 
-    public bool GetPageInfo(string tableName, out TableHead head)
+    public bool GetInfo(string tableName, out TableHead head)
     {
-        head = TableHead.Empty();
+        head = new();
 
         if (!ExistsTable(tableName))
         {
@@ -86,27 +91,26 @@ public class FileSupporter : IFileSupport
 
         try
         {
-            using StreamReader sr = File.OpenText(FullTableName(tableName) + pthspr + inffl + flext);
-            string? line = sr.ReadLine();
-            if (line == null)
-            {
-                return false;
-            }
-            head.Separator = line;
+            head = IFileSupport.BinaryDeserialize<TableHead>(FullInfofileName(tableName));
+        }
+        catch (Exception)
+        {
+            return false;
+        }
 
-            line = sr.ReadLine()?.Trim();
-            if (line == null || !int.TryParse(line, out int limit))
-            {
-                return false;
-            }
-            head.LineLimit = limit;
+        return true;
+    }
 
-            line = sr.ReadLine()?.Trim();
-            if (line == null || !int.TryParse(line, out int page))
-            {
-                return false;
-            }
-            head.StartPage = (ExistsPage(tableName, page)) ? page : defaultStartPage;
+    public bool UpdateInfo(string tableName, TableHead head)
+    {
+        if (!ExistsTable(tableName))
+        {
+            return false;
+        }
+
+        try
+        {
+            IFileSupport.BinarySerialize(FullInfofileName(tableName), head);
         }
         catch (Exception)
         {
@@ -123,10 +127,8 @@ public class FileSupporter : IFileSupport
             try
             {
                 Directory.CreateDirectory(FullTableName(tableName));
-                using StreamWriter sw = File.CreateText(FullTableName(tableName) + pthspr + inffl + flext);
-                sw.WriteLine(head.Separator);
-                sw.WriteLine(head.LineLimit);
-                sw.WriteLine(head.StartPage);
+                File.Create(FullTableName(tableName) + pthspr + inffl);
+                IFileSupport.BinarySerialize(FullInfofileName(tableName), head);
                 File.Create(FullPageName(tableName, head.StartPage));
                 return true;
             }

@@ -1,13 +1,14 @@
 ﻿using ArrayUtilsLibrary;
 using DatabaseDefinitions;
 using FileSupportLibrary;
+using LogicalDatabaseLibrary;
 
 namespace DatabaseLibrary.Tables;
 
 
 public delegate void BufferFlushedHandler(object sender, EventArgs args);
 
-public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTable>
+public class BufferedTable : Table, IComparable<BufferedTable>
 {
     protected int bufferCount;
     protected int currentBuffer;
@@ -40,7 +41,7 @@ public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<Buffe
     {
         if (changed)
         {
-            if (fileSupporter.WriteLines(Name, currentPage, rows) != rows.Length)
+            if (!fileSupporter.UpdateInfo(Name, head) || fileSupporter.WriteLines(Name, currentPage, ToStrings()) != rows.Length)
             {
                 throw new IOException();
             }
@@ -56,7 +57,7 @@ public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<Buffe
         base.LoadPage(page);
     }
 
-    public override string? this[int id]
+    public override TableLine? this[int id]
     {
         get
         {
@@ -74,26 +75,31 @@ public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<Buffe
         }
     }
 
-    public override void Add(string line)
+    public override void Add(TableLine line)
     {
+        line[0] = ++head.MaxId;
         int page = FindFreeSpace();
         int lineNumber = 0;
         if (page == currentPage)
         {
             lineNumber = rows.Length;
             ArrayUtils.Append(ref rows, line);
-            BufferDecrement();
         }
         else
         {
-            fileSupporter.AppendLine(Name, page, line);
+            fileSupporter.AppendLine(Name, page, line.ToString(head.Separator));
         }
+        BufferDecrement();
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
     protected override void Remove(int id, int lineNumber)
     {
         ArrayUtils.Delete(ref rows, lineNumber);
+        if(id == head.MaxId)
+        {
+            head.MaxId--;
+        }
         OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
         BufferDecrement();
     }
@@ -104,13 +110,53 @@ public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<Buffe
         base.Clear();
     }
 
-    public bool Equals(BufferedTable? other)
+    public override bool Equals(object oth)
     {
-        return base.Equals(other) && bufferCount == other.bufferCount;
+        return oth is BufferedTable other &&base.Equals(other) && bufferCount == other.bufferCount;
     }
 
     public int CompareTo(BufferedTable? other)
     {
         return base.CompareTo(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(base.GetHashCode(), head, pages, fileSupporter, Name, bufferCount, changed);
+    }
+
+    public static bool operator <(BufferedTable left, BufferedTable right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+
+    public static bool operator <=(BufferedTable left, BufferedTable right)
+    {
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >(BufferedTable left, BufferedTable right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+
+    public static bool operator >=(BufferedTable left, BufferedTable right)
+    {
+        return left.CompareTo(right) >= 0;
+    }
+
+    public static bool operator ==(BufferedTable left, BufferedTable right)
+    {
+        if (left is null)
+        {
+            return right is null;
+        }
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(BufferedTable left, BufferedTable right)
+    {
+        return !(left == right);
     }
 }

@@ -54,6 +54,11 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return index.ContainsKey(id);
     }
 
+    public bool ContainsKey(Row row)
+    {
+        return index.ContainsKey(LineFormat.GetId(row.Line));
+    }
+
     protected bool ContainsProp(Row row)
     {
         return ContainsProp(Separator(row));
@@ -116,11 +121,27 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
     public void Add(Row row)
     {
         int id = LineFormat.GetId(row.Line);
-        if (!ContainsKey(id))
+        V prop = Separator(row);
+        Add(id, prop);
+    }
+
+    public void Update(int id, V prop)
+    {
+        if (ContainsKey(id))
         {
-            index.Add(id, Separator(row));
-            OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = Separator(row) });
+            this[id] = prop;
         }
+        else
+        {
+            Add(id, prop);
+        }
+    }
+
+    public void Update(Row row)
+    {
+        int id = LineFormat.GetId(row.Line);
+        V prop = Separator(row);
+        Update(id, prop);
     }
 
     public void Remove(int id)

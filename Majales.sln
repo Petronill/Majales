@@ -15,7 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArrayUtilsLibrary", "ArrayU
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseDefinitions", "DatabaseDefinitions\DatabaseDefinitions.csproj", "{8B27DE2B-0D4E-46A7-84BE-093FA533BFA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicalDatabaseLibrary", "LogicalDatabaseLibrary\LogicalDatabaseLibrary.csproj", "{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicalDatabaseLibrary", "LogicalDatabaseLibrary\LogicalDatabaseLibrary.csproj", "{75BB345D-04AF-4CD6-9DBF-8A612AAD15A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68882EB8-367F-4A3B-83DD-B7D6E59F1722} = {68882EB8-367F-4A3B-83DD-B7D6E59F1722}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientLibrary", "ClientLibrary\ClientLibrary.csproj", "{5126E1E7-27D3-428E-A059-62B720D7FC36}"
 EndProject

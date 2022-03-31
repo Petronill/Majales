@@ -1,4 +1,5 @@
 ﻿using DatabaseDefinitions;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FileSupportLibrary;
 
@@ -22,7 +23,9 @@ public interface IFileSupport
 
 	public abstract int AllPages(string tableName, TableHead head);
 
-	public abstract bool GetPageInfo(string tableName, out TableHead head);
+	public abstract bool GetInfo(string tableName, out TableHead head);
+
+	public abstract bool UpdateInfo(string tableName, TableHead head);
 
 	public abstract bool CreateTable(string tableName, TableHead head);
 
@@ -59,4 +62,16 @@ public interface IFileSupport
 	public abstract int DeletePagesIfEmpty(string tableName, int[] pages);
 
 	public abstract int DeleteAllEmptyPages(string tableName, TableHead head);
+
+	public static void BinarySerialize<T>(string path, T write, bool append = false)
+	{
+        using Stream stream = File.Open(path, append ? FileMode.Append : FileMode.Create);
+        new BinaryFormatter().Serialize(stream, write);
+    }
+
+	public static T BinaryDeserialize<T>(string path)
+	{
+        using Stream stream = File.Open(path, FileMode.Open);
+        return (T) (new BinaryFormatter().Deserialize(stream));
+    }
 }

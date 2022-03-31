@@ -1,4 +1,6 @@
-﻿namespace DatabaseDefinitions;
+﻿using LogicalDatabaseLibrary;
+
+namespace DatabaseDefinitions;
 
 public struct RowMeta
 {
@@ -17,18 +19,28 @@ public struct RowMeta
     {
         return HashCode.Combine(PageNumber, LineNumber);
     }
+
+    public static bool operator ==(RowMeta left, RowMeta right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(RowMeta left, RowMeta right)
+    {
+        return !(left == right);
+    }
 }
 
 public struct Row
 {
-    public string? Line { get; init; }
+    public Line? Line { get; init; }
     public RowMeta Meta { get; init; }
     public static Row Empty { get => new() { Line = null, Meta = RowMeta.Empty }; }
 
     public override bool Equals(object? obj)
     {
         return obj is Row row &&
-               Line == row.Line &&
+               Line.Equals(row.Line) &&
                Meta.Equals(row.Meta);
     }
 
@@ -36,62 +48,50 @@ public struct Row
     {
         return HashCode.Combine(Line, Meta);
     }
-}
 
-public static class LineFormat
-{
-    public static int IdStringToInt(string id)
+    public static bool operator ==(Row left, Row right)
     {
-        return int.Parse(id);
+        return left.Equals(right);
     }
 
-    public static string IdIntToString(int id)
+    public static bool operator !=(Row left, Row right)
     {
-        return id.ToString("D10");
-    }
-
-    public static int GetId(string line)
-    {
-        return IdStringToInt(GetIdAsString(line));
-    }
-
-    public static int GetId(Row row)
-    {
-        return IdStringToInt(GetIdAsString(row));
-    }
-
-    public static string GetIdAsString(string line)
-    {
-        return line.Substring(0, 10);
-    }
-
-    public static string GetIdAsString(Row row)
-    {
-        return row.Line != null ? GetIdAsString(row.Line) : string.Empty;
+        return !(left == right);
     }
 }
 
+[Serializable]
 public struct TableHead
 {
     public string Separator { get; set; }
     public int LineLimit { get; set; }
     public int StartPage { get; set; }
+    public TableEntity Entity { get; set; }
 
-    public static TableHead Empty()
-    {
-        return new TableHead { Separator = string.Empty, LineLimit = 0, StartPage = 0};
-    }
+    public int MaxId { get; set; }
 
     public override bool Equals(object? obj)
     {
         return obj is TableHead head &&
                Separator == head.Separator &&
                LineLimit == head.LineLimit &&
-               StartPage == head.StartPage;
+               StartPage == head.StartPage &&
+               Entity.Equals(head.Entity) &&
+               MaxId == head.MaxId;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Separator, LineLimit, StartPage);
+        return HashCode.Combine(Separator, LineLimit, StartPage, Entity, MaxId);
+    }
+
+    public static bool operator ==(TableHead left, TableHead right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(TableHead left, TableHead right)
+    {
+        return !(left == right);
     }
 }

@@ -3,6 +3,7 @@ using FileSupportLibrary;
 using ArrayUtilsLibrary;
 using System.Collections;
 using System.Text;
+using LogicalDatabaseLibrary;
 
 namespace DatabaseLibrary;
 
@@ -14,13 +15,13 @@ public class RowUpdateArgs : EventArgs
 public delegate void RowUpdatedHandler(object sender, RowUpdateArgs args);
 public delegate void TableReorganizationHandler(object sender, EventArgs args);
 
-public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>, IComparable<Table>
+public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 {
     protected TableHead head;
     protected bool pageReady;
     protected int currentPage;
     protected int pages;
-    protected string[] rows = Array.Empty<string>();
+    protected TableLine[] rows = Array.Empty<TableLine>();
     protected IFileSupport fileSupporter;
 
     public string Name { get; init; }
@@ -49,7 +50,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
 
     protected virtual void InitTable(bool preload)
     {
-        if (fileSupporter.GetPageInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(Name, loadedHead)) > 0)
+        if (fileSupporter.GetInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(Name, loadedHead)) > 0)
         {
             this.head = loadedHead;
             pageReady = false;
@@ -74,8 +75,23 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         if (fileSupporter.GetPageLines(Name, page, out string[] lines))
         {
             currentPage = page;
-            rows = lines;
             pageReady = true;
+
+            int i = 0;
+            Array.Resize(ref rows, lines.Length);
+            for (int j = 0; j < lines.Length; j++)
+            {
+                if (rows[i] == null)
+                {
+                    rows[i] = new TableLine(head.Entity);
+                }
+
+                if (rows[i].FromTokens(lines[j].Split(head.Separator)))
+                {
+                    i++;
+                }
+            }
+            Array.Resize(ref rows, i);
         }
         else
         {
@@ -104,7 +120,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         {
             for (lineNumber = 0; lineNumber < rows.Length; lineNumber++)
             {
-                if (LineFormat.GetId(rows[lineNumber]) == id)
+                if (rows[lineNumber].GetId() == id)
                 {
                     return true;
                 }
@@ -145,7 +161,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
             for (int aux = startLine; aux < rows.Length + startLine; aux++)
             {
                 lineNumber = aux % rows.Length;
-                if (LineFormat.GetId(rows[lineNumber]) == id)
+                if (rows[lineNumber].GetId() == id)
                 {
                     return true;
                 }
@@ -173,7 +189,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         return head.StartPage + pages - 1;
     }
 
-    public virtual string? this[int id]
+    public virtual TableLine? this[int id]
     {
         get
         {
@@ -191,12 +207,12 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
             {
                 rows[lineNumber] = value;
                 OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
+                fileSupporter.UpdateLine(Name, currentPage, value.ToString(head.Separator), lineNumber);
             }
         }
     }
 
-    public virtual string? this[int id, IPropIndex index]
+    public virtual TableLine? this[int id, IPropIndex index]
     {
         get
         {
@@ -214,61 +230,18 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
             {
                 rows[lineNumber] = value;
                 OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
+                fileSupporter.UpdateLine(Name, currentPage, value.ToString(head.Separator), lineNumber);
             }
         }
     }
 
-    public virtual string? this[string id]
+    public virtual void Add(TableLine line)
     {
-        get
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return null;
-            }
-            return this[LineFormat.IdStringToInt(id)];
-
-        }
-
-        set
-        {
-            this[LineFormat.IdStringToInt(id)] = value;
-        }
-    }
-
-    public virtual string? this[string id, IPropIndex index]
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return null;
-            }
-            return this[LineFormat.IdStringToInt(id), index];
-
-        }
-
-        set
-        {
-            this[LineFormat.IdStringToInt(id), index] = value;
-        }
-    }
-
-    public virtual void Update(string line)
-    {
-        this[LineFormat.GetId(line)] = line;
-    }
-
-    public virtual void Update(string line, IPropIndex index)
-    {
-        this[LineFormat.GetId(line)] = line;
-    }
-
-    public virtual void Add(string line)
-    {
+        line[0] = ++head.MaxId;
+        fileSupporter.UpdateInfo(Name, head);
+        
         int page = FindFreeSpace();
-        fileSupporter.AppendLine(Name, page, line);
+        fileSupporter.AppendLine(Name, page, line.ToString(head.Separator));
         int lineNumber = 0;
         if (page == currentPage)
         {
@@ -278,15 +251,20 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
-    public virtual void Add(int id, string restOfLine)
+    public virtual void Add(Line line)
     {
-        Add(LineFormat.IdIntToString(id) + head.Separator + restOfLine);
+        Add(new TableLine(0, line));
     }
 
     protected virtual void Remove(int id, int lineNumber)
     {
         fileSupporter.DeleteLine(Name, currentPage, lineNumber);
         ArrayUtils.Delete(ref rows, lineNumber);
+        if (id == head.MaxId)
+        {
+            head.MaxId--;
+            fileSupporter.UpdateInfo(Name, head);
+        }
         OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
@@ -310,75 +288,27 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         return false;
     }
 
-    public virtual void Remove(string id)
-    {
-        Remove(LineFormat.IdStringToInt(id));
-    }
-
-    public virtual void Remove(string id, IPropIndex index)
-    {
-        Remove(LineFormat.IdStringToInt(id), index);
-    }
-
-    public virtual string[] AllProps(string line)
-    {
-        return line == null ? Array.Empty<string>() : line.Split(head.Separator);
-    }
-
-    public virtual int PropNumber(string line)
-    {
-        return AllProps(line).Length;
-    }
-
-    public virtual string PropAtIndex(string line, int index)
-    {
-        return AllProps(line)[index];
-    }
-    public virtual string PropsInRange(string line, int startIndex, int count)
-    {
-        return string.Join(head.Separator, AllProps(line), startIndex, count);
-    }
-
-    public virtual string[] AllProps(Row row)
-    {
-        return AllProps(row.Line);
-    }
-
-    public virtual int PropNumber(Row row)
-    {
-        return PropNumber(row.Line);
-    }
-
-    public virtual string PropAtIndex(Row row, int index)
-    {
-        return PropAtIndex(row.Line, index);
-    }
-    public virtual string PropsInRange(Row row, int startIndex, int count)
-    {
-        return PropsInRange(row.Line, startIndex, count);
-    }
-
     public virtual void Clear()
     {
         pageReady = false;
-        rows = Array.Empty<string>();
+        rows = Array.Empty<TableLine>();
         OnTableCleared(new EventArgs());
-    }
-
-    public virtual string PageToString()
-    {
-        return string.Join(head.Separator, rows);
     }
 
     public override string ToString()
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         foreach (Row r in this)
         {
             sb.Append(r.Line);
             sb.Append('\n');
         }
         return sb.ToString();
+    }
+
+    public string[] ToStrings()
+    {
+        return rows.Select((tl) => tl.ToString(head.Separator)).ToArray();
     }
 
     public IEnumerator<Row> GetEnumerator()
@@ -409,13 +339,53 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         }
     }
 
-    public bool Equals(Table? other)
+    public override bool Equals(object oth)
     {
-        return other != null && this.Name == other.Name && head.Equals(other.head);
+        return oth is Table other && this.Name == other.Name && head.Equals(other.head);
     }
 
     public int CompareTo(Table? other)
     {
         return (other == null) ? -1 : Name.CompareTo(other.Name);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(head, pages, fileSupporter, Name);
+    }
+
+    public static bool operator <(Table left, Table right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+
+    public static bool operator <=(Table left, Table right)
+    {
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >(Table left, Table right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+
+    public static bool operator >=(Table left, Table right)
+    {
+        return left.CompareTo(right) >= 0;
+    }
+
+    public static bool operator ==(Table left, Table right)
+    {
+        if (left is null)
+        {
+            return right is null;
+        }
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Table left, Table right)
+    {
+        return !(left == right);
     }
 }

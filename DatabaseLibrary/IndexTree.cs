@@ -71,6 +71,18 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         }
     }
 
+    public void Update(string key, IIndex<K, V> index)
+    {
+        if (ContainsKey(key))
+        {
+            this[key] = index;
+        }
+        else
+        {
+            Add(key, index);
+        }
+    }
+
     public IIndex<K, V>? Remove(string key)
     {
         IIndex<K, V>? index = indexes[key];

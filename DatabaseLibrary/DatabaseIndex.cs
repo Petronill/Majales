@@ -1,5 +1,6 @@
 ﻿using DatabaseDefinitions;
 using FileSupportLibrary;
+using LogicalDatabaseLibrary;
 using System.Collections;
 using System.Text;
 
@@ -86,7 +87,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public string? this[string name, int id]
+    public TableLine? this[string name, int id]
     {
         get
         {
@@ -94,23 +95,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public string? this[string name, string id]
-    {
-        get
-        {
-            return this[name]?[id];
-        }
-    }
-
-    public string? this[string name, int id, IPropIndex index]
-    {
-        get
-        {
-            return this[name]?[id, index];
-        }
-    }
-
-    public string? this[string name, string id, IPropIndex index]
+    public TableLine? this[string name, int id, IPropIndex index]
     {
         get
         {

@@ -1,6 +1,5 @@
 ﻿using DatabaseLibrary;
 using DatabaseDefinitions;
-using DatabaseLibrary.Tables;
 using FileSupportLibrary;
 using Fei.BaseLib;
 
@@ -24,7 +23,7 @@ class Program
         Console.WriteLine("8. Konec");
     }
 
-    public static bool ReadOption()
+    /*public static bool ReadOption()
     {
         switch (Reading.ReadInt("Zvolte si"))
         {
@@ -144,15 +143,15 @@ class Program
         {
             Console.WriteLine("Tabulka nenalezena.");
         }
-    }
+    }*/
     
     public static void Main()
-    {
+    {   
         Console.WriteLine("Vítejte v organizačním nástroji Kolínského majálesu.");
-        do
+        /*do
         {
             WriteOptions();
-        } while (ReadOption());
+        } while (ReadOption());*/
         Console.WriteLine("Konec programu");
     }
 }
