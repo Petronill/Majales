@@ -55,14 +55,19 @@ public class FileSupporter : IFileSupport
         return tables.ToArray();
     }
 
-    private bool ExistsFile(string filename)
+    public bool ExistsFile(string filename)
     {
         return File.Exists(Workspace + pthspr + filename);
     }
 
+    public bool ExistsDirectory(string name)
+    {
+        return Directory.Exists(Workspace + pthspr + name);
+    }
+
     public bool ExistsTable(string name)
     {
-        return Directory.Exists(Workspace + pthspr + name) && ExistsFile(name + pthspr + inffl + flext);
+        return ExistsDirectory(name) && ExistsFile(name + pthspr + inffl + flext);
     }
 
     public bool ExistsPage(string tableName, int page)
@@ -70,7 +75,7 @@ public class FileSupporter : IFileSupport
         return ExistsTable(tableName) && ExistsFile(tableName + pthspr + page + flext);
     }
 
-    public bool GetInfo(string tableName, out TableHead head)
+    public bool GetPageInfo(string tableName, out TableHead head)
     {
         head = TableHead.Empty();
 
@@ -168,8 +173,7 @@ public class FileSupporter : IFileSupport
         lines = Array.Empty<string>();
         if (!ExistsPage(tableName, page))
         {
-            File.Create(FullPageName(tableName, page));
-            return true;
+            return false;
         }
 
         LinkedList<string> lineList = new();
@@ -190,6 +194,24 @@ public class FileSupporter : IFileSupport
         lines = lineList.ToArray();
 
         return true;
+    }
+
+    public bool GetPageLines(string tableName, int page, out string[] lines)
+    {
+        bool res = GetLines(tableName, page, out lines);
+        if (!res && !ExistsPage(tableName, page))
+        {
+            try
+            {
+                File.Create(FullPageName(tableName, page));
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        return res;
     }
 
     public bool IsPageEmpty(string tableName, int page)

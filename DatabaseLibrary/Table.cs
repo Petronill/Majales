@@ -49,7 +49,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
 
     protected virtual void InitTable(bool preload)
     {
-        if (fileSupporter.GetInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(Name, loadedHead)) > 0)
+        if (fileSupporter.GetPageInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(Name, loadedHead)) > 0)
         {
             this.head = loadedHead;
             pageReady = false;
@@ -71,7 +71,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
             return;
         }
 
-        if (fileSupporter.GetLines(Name, page, out string[] lines))
+        if (fileSupporter.GetPageLines(Name, page, out string[] lines))
         {
             currentPage = page;
             rows = lines;
@@ -179,7 +179,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         {
             if (FindId(id, out int lineNumber))
             {
-                OnRowRequested(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                OnRowRequested(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                 return rows[lineNumber];
             }
             return null;
@@ -192,7 +192,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
                 if (FindId(id, out int lineNumber))
                 {
                     rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                     fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
                 }
                 else
@@ -209,7 +209,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         {
             if (FindId(id, index, out int lineNumber))
             {
-                OnRowRequested(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                OnRowRequested(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                 return rows[lineNumber];
             }
             return null;
@@ -222,7 +222,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
                 if (FindId(id, index, out int lineNumber))
                 {
                     rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                     fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
                 }
                 else
@@ -289,14 +289,14 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
             lineNumber = rows.Length;
             ArrayUtils.Append(ref rows, line);
         }
-        OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
     protected virtual void Remove(int id, int lineNumber)
     {
         fileSupporter.DeleteLine(Name, currentPage, lineNumber);
         ArrayUtils.Delete(ref rows, lineNumber);
-        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
     public virtual bool Remove(int id)

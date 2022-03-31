@@ -10,6 +10,10 @@ public interface IFileSupport
 	public abstract int DefaultStartPage { get; set; }
 	public abstract string Workspace { get; set; }
 
+	public abstract bool ExistsFile(string filename);
+
+	public abstract bool ExistsDirectory(string name);
+
 	public abstract bool ExistsTable(string name);
 
 	public abstract bool ExistsPage(string tableName, int page);
@@ -18,7 +22,7 @@ public interface IFileSupport
 
 	public abstract int AllPages(string tableName, TableHead head);
 
-	public abstract bool GetInfo(string tableName, out TableHead head);
+	public abstract bool GetPageInfo(string tableName, out TableHead head);
 
 	public abstract bool CreateTable(string tableName, TableHead head);
 
@@ -27,6 +31,8 @@ public interface IFileSupport
 	public abstract int DeleteTables(string[] tableNames);
 
 	public abstract bool GetLines(string tableName, int page, out string[] lines);
+
+	public abstract bool GetPageLines(string tableName, int page, out string[] lines);
 
 	public abstract bool IsPageEmpty(string tableName, int page);
 

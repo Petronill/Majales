@@ -35,10 +35,10 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
     protected void OnTableDeleted(TableUpdateArgs args) => TableDeleted?.Invoke(this, args);
     protected void OnDatabaseIndexCleared(EventArgs args) => DatabaseIndexCleared?.Invoke(this, args);
 
-    public DatabaseIndex(IFileSupport fileSupport, TableProvider<T> tableProvider)
+    public DatabaseIndex(IFileSupport fileSupport, TableProvider<T> newTableProvider)
     {
         fileSupporter = fileSupport;
-        provider = tableProvider;
+        provider = newTableProvider;
     }
 
     protected bool ContainsTable(string name)
@@ -131,7 +131,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
 
     public bool TryCreate(string tableName, TableHead head)
     {
-        return this[tableName] == null && fileSupporter.CreateTable(tableName, head);
+        return tableName.Trim().Length != 0 && this[tableName] == null && fileSupporter.CreateTable(tableName, head);
     }
 
     public T? Create(string tableName, TableHead head)

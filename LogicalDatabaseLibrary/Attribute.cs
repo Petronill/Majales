@@ -1,6 +1,6 @@
 ﻿namespace LogicalDatabaseLibrary;
 
-public class Database
+public class Attribute
 {
-    //TODO
+	//TODO
 }

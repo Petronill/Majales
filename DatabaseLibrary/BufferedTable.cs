@@ -7,7 +7,7 @@ namespace DatabaseLibrary.Tables;
 
 public delegate void BufferFlushedHandler(object sender, EventArgs args);
 
-class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTable>
+public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTable>
 {
     protected int bufferCount;
     protected int currentBuffer;
@@ -70,7 +70,7 @@ class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTabl
                 if (FindId(id, out int lineNumber))
                 {
                     rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                     BufferDecrement();
                 }
                 else
@@ -95,13 +95,13 @@ class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<BufferedTabl
         {
             fileSupporter.AppendLine(Name, page, line);
         }
-        OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
     protected override void Remove(int id, int lineNumber)
     {
         ArrayUtils.Delete(ref rows, lineNumber);
-        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = rows[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
         BufferDecrement();
     }
 
