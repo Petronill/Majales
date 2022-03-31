@@ -187,18 +187,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
 
         set
         {
-            if (value != null)
+            if (value != null && FindId(id, out int lineNumber))
             {
-                if (FindId(id, out int lineNumber))
-                {
-                    rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                    fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
-                }
-                else
-                {
-                    Add(value);
-                }
+                rows[lineNumber] = value;
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
             }
         }
     }
@@ -217,18 +210,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
 
         set
         {
-            if (value != null)
+            if (value != null && FindId(id, index, out int lineNumber))
             {
-                if (FindId(id, index, out int lineNumber))
-                {
-                    rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                    fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
-                }
-                else
-                {
-                    Add(value);
-                }
+                rows[lineNumber] = value;
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                fileSupporter.UpdateLine(Name, currentPage, value, lineNumber);
             }
         }
     }

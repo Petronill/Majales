@@ -40,18 +40,10 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
 
         set
         {
-            if (value != null)
+            if (value != null && !indexes.ContainsKey(key))
             {
-                if (!indexes.ContainsKey(key))
-                {
-                    indexes[key] = value;
-                    OnIndexUpdated(EventArgs.Empty);
-                }
-                else
-                {
-                    Add(key, value);
-                }
-                
+                indexes[key] = value;
+                OnIndexUpdated(EventArgs.Empty);
             }
         }
     }
@@ -72,8 +64,11 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
 
     public void Add(string key, IIndex<K, V> index)
     {
-        indexes.Add(key, index);
-        OnIndexUpdated(EventArgs.Empty);
+        if (!ContainsKey(key))
+        {
+            indexes.Add(key, index);
+            OnIndexUpdated(EventArgs.Empty);
+        }
     }
 
     public IIndex<K, V>? Remove(string key)

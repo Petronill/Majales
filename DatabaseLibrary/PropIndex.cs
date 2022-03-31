@@ -83,7 +83,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
 
         set
         {
-            if (value != null)
+            if (value != null && ContainsKey(id))
             {
                 index[id] = value;
                 OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = value });
@@ -104,15 +104,31 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public void Update(Row row)
+    public void Add(int id, V prop)
     {
-        this[row] = Separator(row);
+        if (!ContainsKey(id))
+        {
+            index.Add(id, prop);
+            OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = prop });
+        }
+    }
+
+    public void Add(Row row)
+    {
+        int id = LineFormat.GetId(row.Line);
+        if (!ContainsKey(id))
+        {
+            index.Add(id, Separator(row));
+            OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = Separator(row) });
+        }
     }
 
     public void Remove(int id)
     {
-        index.Remove(id);
-        OnPropDeleted(new PropUdpateArgs<V> { Id = id });
+        if (index.Remove(id))
+        {
+            OnPropDeleted(new PropUdpateArgs<V> { Id = id });
+        }
     }
 
     public void Remove(Row row)

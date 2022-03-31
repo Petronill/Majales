@@ -9,7 +9,7 @@ class Program
     static string workspace = "D:\\Majales";
     static TableHead defaultTableHead = new TableHead { Separator = ";", LineLimit = 10, StartPage = 0};
     static IFileSupport fileSupporter = new FileSupporter(workspace);
-    static DatabaseIndex<BufferedTable> dtb = new(fileSupporter, (name, fs) => new BufferedTable(name, fs));
+    static DatabaseIndex<Table> dtb = new(fileSupporter, (name, fs) => new Table(name, fs));
 
     public static void WriteOptions()
     {
@@ -77,7 +77,7 @@ class Program
     private static void WriteTable()
     {
         string name = Reading.ReadString("Zadejte jméno nové tabulky");
-        BufferedTable? t = dtb[name];
+        Table? t = dtb[name];
         if (t != null)
         {
             Console.WriteLine($"Tabulka {name}:");
@@ -92,7 +92,7 @@ class Program
     private static void DeleteTable()
     {
         string name = Reading.ReadString("Zadejte jméno nové tabulky");
-        BufferedTable? t = dtb.Delete(name);
+        Table? t = dtb.Delete(name);
         if (t != null)
         {
             Console.WriteLine($"Tabulka {name} smazána.");
@@ -106,7 +106,7 @@ class Program
     private static void AddLine()
     {
         string name = Reading.ReadString("Zadejte jméno tabulky");
-        BufferedTable? t = dtb[name];
+        Table? t = dtb[name];
         if (t != null)
         {
             t.Add(Reading.ReadString("Zadejte nový řádek"));
@@ -120,7 +120,7 @@ class Program
     private static void UpdateLine()
     {
         string name = Reading.ReadString("Zadejte jméno tabulky");
-        BufferedTable? t = dtb[name];
+        Table? t = dtb[name];
         if (t != null)
         {
             string line = Reading.ReadString("Zadejte nový řádek");
@@ -135,7 +135,7 @@ class Program
     private static void DeleteLine()
     {
         string name = Reading.ReadString("Zadejte jméno tabulky");
-        BufferedTable? t = dtb[name];
+        Table? t = dtb[name];
         if (t != null)
         {
             t.Remove(Reading.ReadInt("Zadejte id řádky ke smazání"));

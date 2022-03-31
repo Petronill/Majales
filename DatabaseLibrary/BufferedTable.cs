@@ -65,18 +65,11 @@ public class BufferedTable : Table, IEquatable<BufferedTable>, IComparable<Buffe
 
         set
         {
-            if (value != null)
+            if (value != null && FindId(id, out int lineNumber))
             {
-                if (FindId(id, out int lineNumber))
-                {
-                    rows[lineNumber] = value;
-                    OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                    BufferDecrement();
-                }
-                else
-                {
-                    Add(value);
-                }
+                rows[lineNumber] = value;
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+                BufferDecrement();
             }
         }
     }
