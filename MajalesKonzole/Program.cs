@@ -21,7 +21,7 @@ class Program
         Console.WriteLine("5. Přidat řádek");
         Console.WriteLine("6. Přepsat řádek");
         Console.WriteLine("7. Smazat řádek");
-        Console.WriteLine("[Konec]");
+        Console.WriteLine("8. Konec");
     }
 
     public static bool ReadOption()
@@ -30,28 +30,29 @@ class Program
         {
             case 1:
                 WriteAllTables();
-                return true;
+                break;
             case 2:
                 NewTable();
-                return true;
+                break;
             case 3:
                 WriteTable();
-                return true;
+                break;
             case 4:
                 DeleteTable();
-                return true;
+                break;
             case 5:
                 AddLine();
-                return true;
+                break;
             case 6:
                 UpdateLine();
-                return true;
+                break;
             case 7:
                 DeleteLine();
-                return true;
-            default:
+                break;
+            case 8:
                 return false;
         }
+        return true;
     }
 
     private static void WriteAllTables()
