@@ -292,6 +292,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IEquatable<Table>,
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
+    public virtual void Add(int id, string restOfLine)
+    {
+        Add(LineFormat.IdIntToString(id) + head.Separator + restOfLine);
+    }
+
     protected virtual void Remove(int id, int lineNumber)
     {
         fileSupporter.DeleteLine(Name, currentPage, lineNumber);
