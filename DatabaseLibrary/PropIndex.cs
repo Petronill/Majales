@@ -56,7 +56,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
 
     public bool ContainsKey(Row row)
     {
-        return index.ContainsKey(LineFormat.GetId(row.Line));
+        return index.ContainsKey(row.Line.GetId());
     }
 
     protected bool ContainsProp(Row row)
@@ -100,12 +100,12 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
     {
         get
         {
-            return this[LineFormat.GetId(row)];
+            return this[row.Line.GetId()];
         }
 
         set
         {
-            this[LineFormat.GetId(row)] = value;
+            this[row.Line.GetId()] = value;
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
 
     public void Add(Row row)
     {
-        int id = LineFormat.GetId(row.Line);
+        int id = row.Line.GetId();
         V prop = Separator(row);
         Add(id, prop);
     }
@@ -139,7 +139,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
 
     public void Update(Row row)
     {
-        int id = LineFormat.GetId(row.Line);
+        int id = row.Line.GetId();
         V prop = Separator(row);
         Update(id, prop);
     }
@@ -154,7 +154,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
 
     public void Remove(Row row)
     {
-        Remove(LineFormat.GetId(row));
+        Remove(row.Line.GetId());
     }
 
     public RowMeta? GetMeta(int id)

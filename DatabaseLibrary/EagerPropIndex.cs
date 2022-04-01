@@ -12,7 +12,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
     {
         foreach (Row row in table)
         {
-            this[LineFormat.GetId(row)] = Separator(row);
+            this[row.Line.GetId()] = Separator(row);
         }
 
         InitHandlers();

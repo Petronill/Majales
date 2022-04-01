@@ -33,7 +33,7 @@ public struct RowMeta
 
 public struct Row
 {
-    public Line? Line { get; init; }
+    public TableLine? Line { get; init; }
     public RowMeta Meta { get; init; }
     public static Row Empty { get => new() { Line = null, Meta = RowMeta.Empty }; }
 
