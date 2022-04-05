@@ -34,11 +34,11 @@ public class FileSupporter : IFileSupport
         return Workspace + pthspr + tableName;
     }
 
-    public int AllPages(string tableName, TableHead head)
+    public int AllPages(TableMeta tableMeta)
     {
         int count = 0;
 
-        while (ExistsPage(tableName, head.StartPage + count))
+        while (ExistsPage(tableMeta.TableName, tableMeta.Head.StartPage + count))
         {
             count++;
         }
@@ -101,16 +101,16 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool UpdateInfo(string tableName, TableHead head)
+    public bool UpdateInfo(TableMeta tableMeta)
     {
-        if (!ExistsTable(tableName))
+        if (!ExistsTable(tableMeta.TableName))
         {
             return false;
         }
 
         try
         {
-            IFileSupport.BinarySerialize(FullInfofileName(tableName), head);
+            IFileSupport.BinarySerialize(FullInfofileName(tableMeta.TableName), tableMeta.Head);
         }
         catch (Exception)
         {
@@ -120,16 +120,16 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool CreateTable(string tableName, TableHead head)
+    public bool CreateTable(TableMeta tableMeta)
     {
-        if (!ExistsTable(tableName))
+        if (!ExistsTable(tableMeta.TableName))
         {
             try
             {
-                Directory.CreateDirectory(FullTableName(tableName));
-                File.Create(FullTableName(tableName) + pthspr + inffl);
-                IFileSupport.BinarySerialize(FullInfofileName(tableName), head);
-                File.Create(FullPageName(tableName, head.StartPage));
+                Directory.CreateDirectory(FullTableName(tableMeta.TableName));
+                File.Create(FullTableName(tableMeta.TableName) + pthspr + inffl);
+                IFileSupport.BinarySerialize(FullInfofileName(tableMeta.TableName), tableMeta.Head);
+                File.Create(FullPageName(tableMeta.TableName, tableMeta.Head.StartPage));
                 return true;
             }
             catch (Exception)
@@ -183,7 +183,7 @@ public class FileSupporter : IFileSupport
         {
             using StreamReader sr = File.OpenText(FullPageName(tableName, page));
             string? line = sr.ReadLine();
-            while (line != null)
+            while (line is not null)
             {
                 lineList.AddLast(line);
                 line = sr.ReadLine();
@@ -231,7 +231,7 @@ public class FileSupporter : IFileSupport
             {
                 using StreamReader sr = File.OpenText(FullPageName(tableName, page));
                 string? line;
-                while ((line = sr.ReadLine()) != null)
+                while ((line = sr.ReadLine()) is not null)
                 {
                     if (line.Trim().Length > 0) { 
                         count++;
@@ -431,8 +431,8 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public int DeleteAllEmptyPages(string tableName, TableHead head)
+    public int DeleteAllEmptyPages(TableMeta tableMeta)
     {
-        return DeletePagesIfEmpty(tableName, Enumerable.Range(head.StartPage, AllPages(tableName, head)).ToArray());
+        return DeletePagesIfEmpty(tableMeta.TableName, Enumerable.Range(tableMeta.Head.StartPage, AllPages(tableMeta)).ToArray());
     }
 }

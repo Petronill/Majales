@@ -2,7 +2,7 @@
 
 using System.Collections;
 
-namespace DatabaseLibrary;
+namespace DatabaseLibrary.Indexes;
 
 public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
 {

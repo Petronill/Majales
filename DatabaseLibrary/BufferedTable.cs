@@ -3,7 +3,7 @@ using DatabaseDefinitions;
 using FileSupportLibrary;
 using LogicalDatabaseLibrary;
 
-namespace DatabaseLibrary.Tables;
+namespace DatabaseLibrary;
 
 
 public delegate void BufferFlushedHandler(object sender, EventArgs args);
@@ -41,7 +41,7 @@ public class BufferedTable : Table, IComparable<BufferedTable>
     {
         if (changed)
         {
-            if (!fileSupporter.UpdateInfo(Name, head) || fileSupporter.WriteLines(Name, currentPage, ToStrings()) != rows.Length)
+            if (!fileSupporter.UpdateInfo(Meta) || fileSupporter.WriteLines(Name, currentPage, ToStrings()) != rows.Length)
             {
                 throw new IOException();
             }
@@ -66,7 +66,7 @@ public class BufferedTable : Table, IComparable<BufferedTable>
 
         set
         {
-            if (value != null && FindId(id, out int lineNumber))
+            if (value is not null && FindId(id, out int lineNumber))
             {
                 rows[lineNumber] = value;
                 OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
@@ -87,7 +87,7 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         }
         else
         {
-            fileSupporter.AppendLine(Name, page, line.ToString(head.Separator));
+            fileSupporter.AppendLine(Name, page, head.Entity.ToString(line, head.Separator));
         }
         BufferDecrement();
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });

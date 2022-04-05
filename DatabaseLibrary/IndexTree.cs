@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 
-namespace DatabaseLibrary;
+namespace DatabaseLibrary.Indexes;
 
 public delegate void IndexTreeUpdateHandler(object sender, EventArgs args);
 public delegate void IndexTreeReorganizationHandler(object sender, EventArgs args);
 
-public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<string, IIndex<K, V>>, IEnumerable<KeyValuePair<string, IIndex<K, V>>>, IEnumerable<IIndex<K, V>>
+public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>, IEnumerable<KeyValuePair<string, I>>, IEnumerable<I> where I : IIndex<K, V>
 {
-    private readonly Dictionary<string, IIndex<K, V>> indexes = new();
+    private readonly Dictionary<string, I> indexes = new();
 
     public event IndexTreeUpdateHandler? IndexUpdated;
     public event IndexTreeUpdateHandler? IndexDeleted;
@@ -22,25 +22,25 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         return indexes.ContainsKey(key);
     }
 
-    public bool ContainsValue(IIndex<K, V> index)
+    public bool ContainsValue(I index)
     {
         return indexes.ContainsValue(index);
     }
 
-    public IIndex<K, V>? this[string key]
+    public I? this[string key]
     {
         get
         {
-            if (key == null || !ContainsKey(key))
+            if (key is null || !ContainsKey(key))
             {
-                return null;
+                return default;
             }
             return indexes[key];
         }
 
         set
         {
-            if (value != null && !indexes.ContainsKey(key))
+            if (value is not null && !indexes.ContainsKey(key))
             {
                 indexes[key] = value;
                 OnIndexUpdated(EventArgs.Empty);
@@ -52,17 +52,17 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
     {
         get
         {
-            if (indexKey == null)
+            if (indexKey is null)
             {
                 return default;
             }
 
-            IIndex<K, V>? index = this[treeKey];
-            return (index == null) ? default(V) : index[indexKey];
+            I? index = this[treeKey];
+            return (index is null) ? default : index[indexKey];
         }
     }
 
-    public void Add(string key, IIndex<K, V> index)
+    public void Add(string key, I index)
     {
         if (!ContainsKey(key))
         {
@@ -71,7 +71,7 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         }
     }
 
-    public void Update(string key, IIndex<K, V> index)
+    public void Update(string key, I index)
     {
         if (ContainsKey(key))
         {
@@ -83,9 +83,9 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         }
     }
 
-    public IIndex<K, V>? Remove(string key)
+    public I? Remove(string key)
     {
-        IIndex<K, V>? index = indexes[key];
+        I? index = indexes[key];
         if (indexes.Remove(key))
         {
             OnIndexDeleted(EventArgs.Empty);
@@ -99,7 +99,7 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         OnIndexCleared(EventArgs.Empty);
     }
 
-    public IEnumerator<KeyValuePair<string, IIndex<K, V>>> GetEnumerator()
+    public IEnumerator<KeyValuePair<string, I>> GetEnumerator()
     {
         return indexes.GetEnumerator();
     }
@@ -109,7 +109,7 @@ public class IndexTree<K, V> : IDirectIndex<string, IIndex<K, V>>, ILazyIndex<st
         return indexes.GetEnumerator();
     }
 
-    IEnumerator<IIndex<K, V>> IEnumerable<IIndex<K, V>>.GetEnumerator()
+    IEnumerator<I> IEnumerable<I>.GetEnumerator()
     {
         return indexes.Values.GetEnumerator();
     }

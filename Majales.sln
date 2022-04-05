@@ -21,8 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicalDatabaseLibrary", "L
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientLibrary", "ClientLibrary\ClientLibrary.csproj", "{5126E1E7-27D3-428E-A059-62B720D7FC36}"
+	ProjectSection(ProjectDependencies) = postProject
+		{391C7586-FA78-4201-B8AD-F44A36707132} = {391C7586-FA78-4201-B8AD-F44A36707132}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseStructureLibrary", "DatabaseStructureLibrary\DatabaseStructureLibrary.csproj", "{7DA70291-18E0-4BAC-AF0A-FF57BF87A78F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseStructureLibrary", "DatabaseStructureLibrary\DatabaseStructureLibrary.csproj", "{7DA70291-18E0-4BAC-AF0A-FF57BF87A78F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

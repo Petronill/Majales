@@ -1,5 +1,6 @@
 ﻿using LogicalDatabaseLibrary.Attrs;
 using System.Collections;
+using System.Text;
 
 namespace LogicalDatabaseLibrary;
 
@@ -37,6 +38,38 @@ public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
             }
         }
         return -1;
+    }
+
+    public Line? FromTokens(string[] tokens)
+    {
+        if (attrs.Length > tokens.Length)
+        {
+            return null;
+        }
+
+        object?[] tmp = new object?[attrs.Length];
+        for (int i = 0; i < tmp.Length; i++)
+        {
+            object? tmpObj = this[i]?.FromString(tokens[i]);
+            if (!this[i].Check(tmpObj))
+            {
+                return null;
+            }
+            tmp[i] = tmpObj;
+        }
+
+        return new Line(tmp);
+    }
+
+    public string ToString(Line line, string separator)
+    {
+        StringBuilder sb = new();
+        for (int i = 0; i < attrs.Length; i++)
+        {
+            object? o = this[i]?.ToString(line[i]);
+            sb.Append(o != null ? o : "").Append(separator);
+        }
+        return sb.Remove(sb.Length - 1, 1).ToString();
     }
 
     public bool Equals(Entity? other)

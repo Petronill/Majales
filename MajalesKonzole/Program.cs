@@ -5,12 +5,8 @@ using Fei.BaseLib;
 
 class Program
 {
-    static string workspace = "D:\\Majales";
-    static TableHead defaultTableHead = new TableHead { Separator = ";", LineLimit = 10, StartPage = 0};
-    static IFileSupport fileSupporter = new FileSupporter(workspace);
-    static DatabaseIndex<Table> dtb = new(fileSupporter, (name, fs) => new Table(name, fs));
 
-    public static void WriteOptions()
+    /*public static void WriteOptions()
     {
         Console.WriteLine("Nabídka:");
         Console.WriteLine("1. Výpis všech tabulek");
@@ -23,7 +19,7 @@ class Program
         Console.WriteLine("8. Konec");
     }
 
-    /*public static bool ReadOption()
+    public static bool ReadOption()
     {
         switch (Reading.ReadInt("Zvolte si"))
         {

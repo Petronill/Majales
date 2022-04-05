@@ -60,38 +60,11 @@ public struct Row
     }
 }
 
-[Serializable]
-public struct TableHead
+public class RowUpdateArgs : EventArgs
 {
-    public string Separator { get; set; }
-    public int LineLimit { get; set; }
-    public int StartPage { get; set; }
-    public TableEntity Entity { get; set; }
-
-    public int MaxId { get; set; }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is TableHead head &&
-               Separator == head.Separator &&
-               LineLimit == head.LineLimit &&
-               StartPage == head.StartPage &&
-               Entity.Equals(head.Entity) &&
-               MaxId == head.MaxId;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Separator, LineLimit, StartPage, Entity, MaxId);
-    }
-
-    public static bool operator ==(TableHead left, TableHead right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(TableHead left, TableHead right)
-    {
-        return !(left == right);
-    }
+    public Row Row { get; init; }
 }
+
+public delegate void RowUpdatedHandler(object sender, RowUpdateArgs args);
+
+public delegate bool RowSelector(Row row);

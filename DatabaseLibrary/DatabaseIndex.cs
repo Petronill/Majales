@@ -4,16 +4,8 @@ using LogicalDatabaseLibrary;
 using System.Collections;
 using System.Text;
 
-namespace DatabaseLibrary;
+namespace DatabaseLibrary.Indexes;
 
-public delegate T TableProvider<T>(string name, IFileSupport fileSupporter) where T : Table;
-
-public class TableUpdateArgs : EventArgs
-{
-    public string Name { get; init; }
-}
-
-public delegate void TableUpdatedHandler(object sender, TableUpdateArgs e);
 public delegate void DatabaseIndexReorganizationHandler(object sender, EventArgs e);
 
 public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerable<KeyValuePair<string, T>>, IQuietEnumerable<string, T> where T: Table
@@ -21,6 +13,8 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
     private readonly Dictionary<string, T> tables = new();
     protected IFileSupport fileSupporter;
     protected TableProvider<T> provider;
+
+    public string Path { get => fileSupporter.Workspace; }
 
     public event TableUpdatedHandler? TableCreated;
     public event TableUpdatedHandler? TableUpdated;
@@ -103,34 +97,34 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public T? Add(string tableName, TableHead head)
+    public T? Add(TableMeta meta)
     {
-        T? t = tables[tableName];
-        if (t != null)
+        T? t = tables[meta.TableName];
+        if (t is not null)
         {
-            OnTableUpdated(new TableUpdateArgs { Name = tableName });
+            OnTableUpdated(new TableUpdateArgs { Name = meta.TableName });
             return t;
         }
-        return Create(tableName, head);
+        return Create(meta);
     }
 
-    public bool TryCreate(string tableName, TableHead head)
+    public bool TryCreate(TableMeta meta)
     {
-        return tableName.Trim().Length != 0 && this[tableName] == null && fileSupporter.CreateTable(tableName, head);
+        return meta.TableName.Trim().Length != 0 && this[meta.TableName] is null && fileSupporter.CreateTable(meta);
     }
 
-    public T? Create(string tableName, TableHead head)
+    public T? Create(TableMeta meta)
     {
-        if (TryCreate(tableName, head))
+        if (TryCreate(meta))
         {
             try
             {
-                OnTableCreated(new TableUpdateArgs { Name = tableName });
-                return this[tableName];
+                OnTableCreated(new TableUpdateArgs { Name = meta.TableName });
+                return this[meta.TableName];
             }
             catch (Exception)
             {
-                fileSupporter.DeleteTable(tableName);
+                fileSupporter.DeleteTable(meta.TableName);
             }
         }
         return null;
@@ -139,7 +133,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
     public T? Remove(string tableName)
     {
         T? stara = this[tableName];
-        if (stara != null)
+        if (stara is not null)
         {
             tables.Remove(tableName);
             OnTableRemoved(new TableUpdateArgs { Name = tableName });
@@ -150,7 +144,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
     public T? Delete(string tableName)
     {
         T? stara = this[tableName];
-        if (stara != null && fileSupporter.DeleteTable(tableName))
+        if (stara is not null && fileSupporter.DeleteTable(tableName))
         {
             tables.Remove(tableName);
             OnTableDeleted(new TableUpdateArgs { Name = tableName });

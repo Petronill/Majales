@@ -1,6 +1,6 @@
 ﻿using DatabaseDefinitions;
 
-namespace DatabaseLibrary;
+namespace DatabaseLibrary.Indexes;
 
 public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerable<int, V>
 {

@@ -4,16 +4,9 @@ using ArrayUtilsLibrary;
 using System.Collections;
 using System.Text;
 using LogicalDatabaseLibrary;
+using DatabaseLibrary.Indexes;
 
 namespace DatabaseLibrary;
-
-public class RowUpdateArgs : EventArgs
-{
-    public Row Row { get; init; }
-}
-
-public delegate void RowUpdatedHandler(object sender, RowUpdateArgs args);
-public delegate void TableReorganizationHandler(object sender, EventArgs args);
 
 public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 {
@@ -25,6 +18,8 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
     protected IFileSupport fileSupporter;
 
     public string Name { get; init; }
+
+    public TableMeta Meta { get => new() { TableName = Name, Head = head }; }
 
     public event RowUpdatedHandler? RowUpdated;
     public event RowUpdatedHandler? RowRequested;
@@ -50,7 +45,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
     protected virtual void InitTable(bool preload)
     {
-        if (fileSupporter.GetInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(Name, loadedHead)) > 0)
+        if (fileSupporter.GetInfo(Name, out TableHead loadedHead) && (pages = fileSupporter.AllPages(new() { TableName = Name, Head = loadedHead })) > 0)
         {
             this.head = loadedHead;
             pageReady = false;
@@ -81,13 +76,15 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
             Array.Resize(ref rows, lines.Length);
             for (int j = 0; j < lines.Length; j++)
             {
-                if (rows[i] == null)
+                if (rows[i] is null)
                 {
-                    rows[i] = new TableLine(head.Entity);
+                    rows[i] = new TableLine();
                 }
 
-                if (rows[i].FromTokens(lines[j].Split(head.Separator)))
+                TableLine? tmp = head.Entity.FromTokens(lines[j].Split(head.Separator));
+                if (tmp is not null)
                 {
+                    rows[i] = tmp;
                     i++;
                 }
             }
@@ -135,7 +132,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
     protected virtual bool FindId(int id, IPropIndex index, out int lineNumber)
     {
         RowMeta? tmp = index.GetMeta(id);
-        if (tmp == null)
+        if (tmp is null)
         {
             return FindId(id, out lineNumber);
         }
@@ -203,11 +200,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
         set
         {
-            if (value != null && FindId(id, out int lineNumber))
+            if (value is not null && FindId(id, out int lineNumber))
             {
                 rows[lineNumber] = value;
                 OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                fileSupporter.UpdateLine(Name, currentPage, value.ToString(head.Separator), lineNumber);
+                fileSupporter.UpdateLine(Name, currentPage, head.Entity.ToString(value, head.Separator), lineNumber);
             }
         }
     }
@@ -226,11 +223,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
         set
         {
-            if (value != null && FindId(id, index, out int lineNumber))
+            if (value is not null && FindId(id, index, out int lineNumber))
             {
                 rows[lineNumber] = value;
                 OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
-                fileSupporter.UpdateLine(Name, currentPage, value.ToString(head.Separator), lineNumber);
+                fileSupporter.UpdateLine(Name, currentPage, head.Entity.ToString(value, head.Separator), lineNumber);
             }
         }
     }
@@ -238,10 +235,10 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
     public virtual void Add(TableLine line)
     {
         line[0] = ++head.MaxId;
-        fileSupporter.UpdateInfo(Name, head);
+        fileSupporter.UpdateInfo(Meta);
         
         int page = FindFreeSpace();
-        fileSupporter.AppendLine(Name, page, line.ToString(head.Separator));
+        fileSupporter.AppendLine(Name, page, head.Entity.ToString(line, head.Separator));
         int lineNumber = 0;
         if (page == currentPage)
         {
@@ -253,7 +250,11 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
     public virtual void Add(Line line)
     {
-        Add(new TableLine(0, line));
+        TableLine? tmp = head.Entity.FromLine(0, line);
+        if (tmp is not null)
+        {
+            Add(tmp);
+        }
     }
 
     protected virtual void Remove(int id, int lineNumber)
@@ -263,7 +264,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
         if (id == head.MaxId)
         {
             head.MaxId--;
-            fileSupporter.UpdateInfo(Name, head);
+            fileSupporter.UpdateInfo(Meta);
         }
         OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
@@ -308,7 +309,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
     public string[] ToStrings()
     {
-        return rows.Select((tl) => tl.ToString(head.Separator)).ToArray();
+        return rows.Select((tl) => head.Entity.ToString(tl, head.Separator)).ToArray();
     }
 
     public IEnumerator<Row> GetEnumerator()
@@ -346,7 +347,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
 
     public int CompareTo(Table? other)
     {
-        return (other == null) ? -1 : Name.CompareTo(other.Name);
+        return (other is null) ? -1 : Name.CompareTo(other.Name);
     }
 
     public override int GetHashCode()

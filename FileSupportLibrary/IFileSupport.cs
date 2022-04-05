@@ -21,13 +21,13 @@ public interface IFileSupport
 
 	public abstract string[] AllTables();
 
-	public abstract int AllPages(string tableName, TableHead head);
+	public abstract int AllPages(TableMeta tableMeta);
 
 	public abstract bool GetInfo(string tableName, out TableHead head);
 
-	public abstract bool UpdateInfo(string tableName, TableHead head);
+	public abstract bool UpdateInfo(TableMeta tableMeta);
 
-	public abstract bool CreateTable(string tableName, TableHead head);
+	public abstract bool CreateTable(TableMeta tableMeta);
 
 	public abstract bool DeleteTable(string tableName);
 
@@ -61,7 +61,7 @@ public interface IFileSupport
 
 	public abstract int DeletePagesIfEmpty(string tableName, int[] pages);
 
-	public abstract int DeleteAllEmptyPages(string tableName, TableHead head);
+	public abstract int DeleteAllEmptyPages(TableMeta tableMeta);
 
 	public static void BinarySerialize<T>(string path, T write, bool append = false)
 	{
