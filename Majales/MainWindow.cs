@@ -42,7 +42,7 @@ namespace Majales
             if (eventWindow is null)
             {
                 eventWindow = new();
-                eventWindow.FormClosed += (s, e) => teamWindow = null;
+                eventWindow.FormClosed += (s, e) => eventWindow = null;
                 eventWindow.Show();
             }
             else
@@ -56,7 +56,7 @@ namespace Majales
             if (taskWindow is null)
             {
                 taskWindow = new();
-                taskWindow.FormClosed += (s, e) => teamWindow = null;
+                taskWindow.FormClosed += (s, e) => taskWindow = null;
                 taskWindow.Show();
             }
             else

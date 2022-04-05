@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TeamWindow));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -49,6 +50,8 @@
             this.NovyClen = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatClena = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazCleny = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatSekce = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatCleny = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -201,25 +204,27 @@
             this.SekceMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.SekceMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovaSekce,
+            this.FiltrovatSekce,
             this.SmazatSekci,
             this.SmazSekce});
             this.SekceMenu.Name = "contextMenuStrip1";
-            this.SekceMenu.Size = new System.Drawing.Size(140, 76);
+            this.SekceMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // ClenoveMenu
             // 
             this.ClenoveMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.ClenoveMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovyClen,
+            this.FiltrovatCleny,
             this.SmazatClena,
             this.SmazCleny});
             this.ClenoveMenu.Name = "ClenoveMenu";
-            this.ClenoveMenu.Size = new System.Drawing.Size(140, 76);
+            this.ClenoveMenu.Size = new System.Drawing.Size(211, 128);
             // 
             // NovyClen
             // 
             this.NovyClen.Name = "NovyClen";
-            this.NovyClen.Size = new System.Drawing.Size(139, 24);
+            this.NovyClen.Size = new System.Drawing.Size(210, 24);
             this.NovyClen.Text = "Nový";
             // 
             // SmazatClena
@@ -234,6 +239,18 @@
             this.SmazCleny.Size = new System.Drawing.Size(210, 24);
             this.SmazCleny.Text = "Smaž vše";
             // 
+            // FiltrovatSekce
+            // 
+            this.FiltrovatSekce.Name = "FiltrovatSekce";
+            this.FiltrovatSekce.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatSekce.Text = "Filtrovat";
+            // 
+            // FiltrovatCleny
+            // 
+            this.FiltrovatCleny.Name = "FiltrovatCleny";
+            this.FiltrovatCleny.Size = new System.Drawing.Size(210, 24);
+            this.FiltrovatCleny.Text = "Filtrovat";
+            // 
             // TeamWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -241,6 +258,7 @@
             this.ClientSize = new System.Drawing.Size(982, 703);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TeamWindow";
             this.Text = "Tým - Kolínský Majáles";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -279,5 +297,7 @@
         private ToolStripMenuItem NovyClen;
         private ToolStripMenuItem SmazatClena;
         private ToolStripMenuItem SmazCleny;
+        private ToolStripMenuItem FiltrovatSekce;
+        private ToolStripMenuItem FiltrovatCleny;
     }
 }

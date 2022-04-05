@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EventWindow));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -49,8 +50,10 @@
             this.SmazProjekty = new System.Windows.Forms.ToolStripMenuItem();
             this.AkceMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovaAkce = new System.Windows.Forms.ToolStripMenuItem();
-            this.SmazAkce = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatAkci = new System.Windows.Forms.ToolStripMenuItem();
+            this.SmazAkce = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatProjekty = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatAkce = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -197,10 +200,11 @@
             this.ProjektyMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.ProjektyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovyProjekt,
+            this.FiltrovatProjekty,
             this.SmazatProjekt,
             this.SmazProjekty});
             this.ProjektyMenu.Name = "contextMenuStrip1";
-            this.ProjektyMenu.Size = new System.Drawing.Size(140, 76);
+            this.ProjektyMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // NovyProjekt
             // 
@@ -225,10 +229,11 @@
             this.AkceMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.AkceMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovaAkce,
+            this.FiltrovatAkce,
             this.SmazatAkci,
             this.SmazAkce});
             this.AkceMenu.Name = "contextMenuStrip5";
-            this.AkceMenu.Size = new System.Drawing.Size(211, 104);
+            this.AkceMenu.Size = new System.Drawing.Size(211, 128);
             // 
             // NovaAkce
             // 
@@ -236,17 +241,29 @@
             this.NovaAkce.Size = new System.Drawing.Size(210, 24);
             this.NovaAkce.Text = "Nová";
             // 
+            // SmazatAkci
+            // 
+            this.SmazatAkci.Name = "SmazatAkci";
+            this.SmazatAkci.Size = new System.Drawing.Size(210, 24);
+            this.SmazatAkci.Text = "Smazat";
+            // 
             // SmazAkce
             // 
             this.SmazAkce.Name = "SmazAkce";
             this.SmazAkce.Size = new System.Drawing.Size(210, 24);
             this.SmazAkce.Text = "Smaž vše";
             // 
-            // SmazatAkci
+            // FiltrovatProjekty
             // 
-            this.SmazatAkci.Name = "SmazatAkci";
-            this.SmazatAkci.Size = new System.Drawing.Size(210, 24);
-            this.SmazatAkci.Text = "Smazat";
+            this.FiltrovatProjekty.Name = "FiltrovatProjekty";
+            this.FiltrovatProjekty.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatProjekty.Text = "Filtrovat";
+            // 
+            // FiltrovatAkce
+            // 
+            this.FiltrovatAkce.Name = "FiltrovatAkce";
+            this.FiltrovatAkce.Size = new System.Drawing.Size(210, 24);
+            this.FiltrovatAkce.Text = "Filtrovat";
             // 
             // EventWindow
             // 
@@ -254,7 +271,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(982, 703);
             this.Controls.Add(this.splitContainer1);
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EventWindow";
             this.Text = "Program - Kolínský Majáles";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -295,5 +314,7 @@
         private ToolStripMenuItem NovaAkce;
         private ToolStripMenuItem SmazAkce;
         private ToolStripMenuItem SmazatAkci;
+        private ToolStripMenuItem FiltrovatProjekty;
+        private ToolStripMenuItem FiltrovatAkce;
     }
 }

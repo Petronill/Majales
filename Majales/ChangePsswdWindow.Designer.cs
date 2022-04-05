@@ -28,16 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChangePsswdWindow));
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.TxtKontrola = new System.Windows.Forms.TextBox();
+            this.TxtNove = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.BtnZmenit = new System.Windows.Forms.Button();
             this.TxtStare = new System.Windows.Forms.TextBox();
-            this.TxtNove = new System.Windows.Forms.TextBox();
-            this.TxtKontrola = new System.Windows.Forms.TextBox();
             this.LblMsg = new System.Windows.Forms.Label();
+            this.BtnZmenit = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -74,6 +75,24 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(316, 170);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // TxtKontrola
+            // 
+            this.TxtKontrola.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxtKontrola.Location = new System.Drawing.Point(161, 127);
+            this.TxtKontrola.Name = "TxtKontrola";
+            this.TxtKontrola.PasswordChar = '*';
+            this.TxtKontrola.Size = new System.Drawing.Size(152, 27);
+            this.TxtKontrola.TabIndex = 5;
+            // 
+            // TxtNove
+            // 
+            this.TxtNove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxtNove.Location = new System.Drawing.Point(161, 70);
+            this.TxtNove.Name = "TxtNove";
+            this.TxtNove.PasswordChar = '*';
+            this.TxtNove.Size = new System.Drawing.Size(152, 27);
+            this.TxtNove.TabIndex = 4;
             // 
             // label1
             // 
@@ -117,6 +136,26 @@
             this.label3.Text = "Kontrola:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // TxtStare
+            // 
+            this.TxtStare.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxtStare.Location = new System.Drawing.Point(161, 14);
+            this.TxtStare.Name = "TxtStare";
+            this.TxtStare.PasswordChar = '*';
+            this.TxtStare.Size = new System.Drawing.Size(152, 27);
+            this.TxtStare.TabIndex = 3;
+            // 
+            // LblMsg
+            // 
+            this.LblMsg.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.LblMsg.AutoSize = true;
+            this.LblMsg.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.LblMsg.ForeColor = System.Drawing.Color.Firebrick;
+            this.LblMsg.Location = new System.Drawing.Point(191, 206);
+            this.LblMsg.Name = "LblMsg";
+            this.LblMsg.Size = new System.Drawing.Size(0, 23);
+            this.LblMsg.TabIndex = 7;
+            // 
             // BtnZmenit
             // 
             this.BtnZmenit.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -133,44 +172,6 @@
             this.BtnZmenit.UseVisualStyleBackColor = true;
             this.BtnZmenit.Click += new System.EventHandler(this.BtnZmenit_Click);
             // 
-            // TxtStare
-            // 
-            this.TxtStare.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtStare.Location = new System.Drawing.Point(161, 14);
-            this.TxtStare.Name = "TxtStare";
-            this.TxtStare.PasswordChar = '*';
-            this.TxtStare.Size = new System.Drawing.Size(152, 27);
-            this.TxtStare.TabIndex = 3;
-            // 
-            // TxtNove
-            // 
-            this.TxtNove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtNove.Location = new System.Drawing.Point(161, 70);
-            this.TxtNove.Name = "TxtNove";
-            this.TxtNove.PasswordChar = '*';
-            this.TxtNove.Size = new System.Drawing.Size(152, 27);
-            this.TxtNove.TabIndex = 4;
-            // 
-            // TxtKontrola
-            // 
-            this.TxtKontrola.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtKontrola.Location = new System.Drawing.Point(161, 127);
-            this.TxtKontrola.Name = "TxtKontrola";
-            this.TxtKontrola.PasswordChar = '*';
-            this.TxtKontrola.Size = new System.Drawing.Size(152, 27);
-            this.TxtKontrola.TabIndex = 5;
-            // 
-            // LblMsg
-            // 
-            this.LblMsg.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.LblMsg.AutoSize = true;
-            this.LblMsg.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.LblMsg.ForeColor = System.Drawing.Color.Firebrick;
-            this.LblMsg.Location = new System.Drawing.Point(191, 206);
-            this.LblMsg.Name = "LblMsg";
-            this.LblMsg.Size = new System.Drawing.Size(0, 23);
-            this.LblMsg.TabIndex = 7;
-            // 
             // ChangePsswdWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -178,6 +179,7 @@
             this.ClientSize = new System.Drawing.Size(382, 337);
             this.Controls.Add(this.flowLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ChangePsswdWindow";
             this.Text = "Změna hesla - Kolínský Majáles";
             this.flowLayoutPanel1.ResumeLayout(false);

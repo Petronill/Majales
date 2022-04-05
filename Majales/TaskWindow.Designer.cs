@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TaskWindow));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -52,6 +53,8 @@
             this.NovyKomentar = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatKomentar = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazKomentare = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatUkoly = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatKomentare = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -204,10 +207,11 @@
             this.UkolyMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.UkolyMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovyUkol,
+            this.FiltrovatUkoly,
             this.SmazatUkol,
             this.SmazUkoly});
             this.UkolyMenu.Name = "contextMenuStrip1";
-            this.UkolyMenu.Size = new System.Drawing.Size(140, 76);
+            this.UkolyMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // NovyUkol
             // 
@@ -232,10 +236,11 @@
             this.KomentareMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.KomentareMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NovyKomentar,
+            this.FiltrovatKomentare,
             this.SmazatKomentar,
             this.SmazKomentare});
             this.KomentareMenu.Name = "KomentareMenu";
-            this.KomentareMenu.Size = new System.Drawing.Size(211, 104);
+            this.KomentareMenu.Size = new System.Drawing.Size(211, 128);
             // 
             // NovyKomentar
             // 
@@ -255,6 +260,18 @@
             this.SmazKomentare.Size = new System.Drawing.Size(210, 24);
             this.SmazKomentare.Text = "Smaž vše";
             // 
+            // FiltrovatUkoly
+            // 
+            this.FiltrovatUkoly.Name = "FiltrovatUkoly";
+            this.FiltrovatUkoly.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatUkoly.Text = "Filtrovat";
+            // 
+            // FiltrovatKomentare
+            // 
+            this.FiltrovatKomentare.Name = "FiltrovatKomentare";
+            this.FiltrovatKomentare.Size = new System.Drawing.Size(210, 24);
+            this.FiltrovatKomentare.Text = "Filtrovat";
+            // 
             // TaskWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -262,6 +279,7 @@
             this.ClientSize = new System.Drawing.Size(1182, 703);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TaskWindow";
             this.Text = "Úkoly - Kolínský Majáles";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -303,5 +321,7 @@
         private ToolStripMenuItem NovyKomentar;
         private ToolStripMenuItem SmazatKomentar;
         private ToolStripMenuItem SmazKomentare;
+        private ToolStripMenuItem FiltrovatUkoly;
+        private ToolStripMenuItem FiltrovatKomentare;
     }
 }

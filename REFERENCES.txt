@@ -1,2 +1,3 @@
-logo /Majales/Resources/logo_web.png - vytvoøil Ondøej Skoøepa (2022); s výslovným souhlasem autora pro nekomerèní použití
+logo /Majales/Resources/logo_web.png - vytvoøil Ondøej Skoøepa (2022); s výslovným souhlasem autora pro soukromé nekomerèní použití
+ikona /Majales/Resource/logo_web.ico - konvertováno z pøedchozího obrázku
 dokumentace a pøíklady kódu https://docs.microsoft.com/en-us/dotnet/csharp/
