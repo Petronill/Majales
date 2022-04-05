@@ -1,0 +1,2 @@
+logo /Majales/Resources/logo_web.png - vytvoøil Ondøej Skoøepa (2022); s výslovným souhlasem autora pro nekomerèní použití
+dokumentace a pøíklady kódu https://docs.microsoft.com/en-us/dotnet/csharp/
