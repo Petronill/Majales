@@ -2,7 +2,6 @@
 using DatabaseLibrary;
 using DatabaseLibrary.Indexes;
 using LogicalDatabaseLibrary;
-using LogicalDatabaseLibrary.Attrs;
 using FileSupportLibrary;
 
 namespace ClientLibrary;
@@ -29,7 +28,7 @@ public class SimpleManager : IDatabaseManager
             return false;
         }
 
-        databases.Add(dtbmeta.Name, new DatabaseIndex<BufferedTable>(new FileSupporter(dtbmeta.Path), BufferedTable.GetTableProvider()));
+        databases.Add(dtbmeta.Name, new DatabaseIndex<BufferedTable>(new FileSupporter(dtbmeta.Path), BufferedTable.GetTableProvider(1)));
         return true;
     }
 
@@ -64,7 +63,6 @@ public class SimpleManager : IDatabaseManager
                 count++;
             }
         }
-
         return count;
     }
 
@@ -200,9 +198,9 @@ public class SimpleManager : IDatabaseManager
         return lines.ToArray();
     }
 
-    public TableMeta[] GetAllTables(DatabaseSelector dtbsel)
+    public Table[] GetAllTables(DatabaseSelector dtbsel)
     {
-        List<TableMeta> tables = new();
+        List<Table> tables = new();
 
         foreach (var dtb in databases)
         {
@@ -210,7 +208,7 @@ public class SimpleManager : IDatabaseManager
             {
                 foreach (var table in dtb.Value)
                 {
-                    tables.Add(table.Meta);
+                    tables.Add(table);
                 }
             }
         }
@@ -234,9 +232,9 @@ public class SimpleManager : IDatabaseManager
         return dtbs.ToArray();
     }
 
-    public TableMeta[] GetDatabaseTables(DatabaseSelector dtbsel, TableSelector tblsel)
+    public Table[] GetDatabaseTables(DatabaseSelector dtbsel, TableSelector tblsel)
     {
-        List<TableMeta> tables = new();
+        List<Table> tables = new();
 
         foreach (var dtb in databases)
         {
@@ -246,7 +244,7 @@ public class SimpleManager : IDatabaseManager
                 {
                     if (tblsel(table))
                     {
-                        tables.Add(table.Meta);
+                        tables.Add(table);
                     }
                 }
             }
@@ -334,6 +332,27 @@ public class SimpleManager : IDatabaseManager
         return count;
     }
 
+    public int UpdateLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
+    {
+        int count = 0;
+        foreach (var dtb in databases)
+        {
+            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            {
+                foreach (var table in dtb.Value)
+                {
+                    if (tblsel(table))
+                    {
+                        table.Update(line);
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
     public int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel, int attrIndex, object? value)
     {
         int count = 0;
@@ -349,7 +368,9 @@ public class SimpleManager : IDatabaseManager
                         {
                             if (rowsel(row))
                             {
-                                row.Line[attrIndex] = value;
+                                TableLine line = row.Line;
+                                line[attrIndex] = value;
+                                table[line.GetId()] = line;
                                 count++;
                             }
                         }
@@ -376,6 +397,7 @@ public class SimpleManager : IDatabaseManager
                         if (r is not null)
                         {
                             r[attrIndex] = value;
+                            table[lineId] = r;
                             count++;
                         }
                     }
@@ -401,7 +423,9 @@ public class SimpleManager : IDatabaseManager
                         {
                             if (rowsel(row))
                             {
-                                row.Line[table.Meta.Head.Entity.GetIndex(attrName)] = value;
+                                TableLine line = row.Line;
+                                line[table.Meta.Head.Entity.GetIndex(attrName)] = value;
+                                table[line.GetId()] = line;
                                 count++;
                             }
                         }
@@ -428,7 +452,68 @@ public class SimpleManager : IDatabaseManager
                         if (r is not null)
                         {
                             r[table.Meta.Head.Entity.GetIndex(attrName)] = value;
+                            table[lineId] = r;
                             count++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public int Contains(DatabaseSelector dtbsel)
+    {
+        int count = 0;
+        foreach (var dtb in databases)
+        {
+            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int Contains(DatabaseSelector dtbsel, TableSelector tblsel)
+    {
+        int count = 0;
+        foreach (var dtb in databases)
+        {
+            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            {
+                foreach (var table in dtb.Value)
+                {
+                    if (tblsel(table))
+                    {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public int Contains(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
+    {
+        int count = 0;
+        foreach (var dtb in databases)
+        {
+            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            {
+                foreach (var table in dtb.Value)
+                {
+                    if (tblsel(table))
+                    {
+                        foreach (var row in table)
+                        {
+                            if (rowsel(row))
+                            {
+                                count++;
+                            }
                         }
                     }
                 }

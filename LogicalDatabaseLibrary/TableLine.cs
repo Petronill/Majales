@@ -7,8 +7,8 @@ public class TableLine : Line
     public TableLine()
     {
     }
-    
-    public TableLine(object?[] content) : base(content)
+
+    public TableLine(params object?[] content) : base(content)
     {
     }
     

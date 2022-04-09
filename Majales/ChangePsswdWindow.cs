@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PasswordManagementLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,29 +13,38 @@ namespace Majales
 {
     public partial class ChangePsswdWindow : Form
     {
+        protected IPasswordManager pwdmng;
+        protected string username;
         protected bool success = false;
         public bool Success { get => success; }
 
-        public ChangePsswdWindow()
+        public ChangePsswdWindow(string username, IPasswordManager pwdmng)
         {
             InitializeComponent();
+            this.pwdmng = pwdmng;
+            this.username = username;
         }
 
         private void BtnZmenit_Click(object sender, EventArgs e)
         {
-            //TODO: zkontrolovat heslo
-            if (TxtStare.Text == TxtNove.Text)
+            if (txtNove.Text != txtKontrola.Text)
             {
-                LblMsg.Text = "Nové heslo nesmí být stejné jako staré";
-            }
-            else if (TxtNove.Text != TxtKontrola.Text)
-            {
-                LblMsg.Text = "Kontrola je jiná než zadané nové heslo";
+                lblMsg.Text = "Kontrola je jiná než zadané nové heslo";
             }
             else
             {
-                success = true;
-                Close();
+                try
+                {
+                    if (pwdmng.ChangePassword(username, txtStare.Text.Trim(), txtNove.Text.Trim()))
+                    {
+                        success = true;
+                        Close();
+                    }
+                }
+                catch (ArgumentException aex)
+                {
+                    lblMsg.Text = aex.Message;
+                }
             }
         }
     }

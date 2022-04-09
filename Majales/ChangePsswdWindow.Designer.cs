@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChangePsswdWindow));
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.TxtKontrola = new System.Windows.Forms.TextBox();
-            this.TxtNove = new System.Windows.Forms.TextBox();
+            this.txtKontrola = new System.Windows.Forms.TextBox();
+            this.txtNove = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.TxtStare = new System.Windows.Forms.TextBox();
-            this.LblMsg = new System.Windows.Forms.Label();
+            this.txtStare = new System.Windows.Forms.TextBox();
+            this.lblMsg = new System.Windows.Forms.Label();
             this.BtnZmenit = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -46,7 +46,7 @@
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.tableLayoutPanel1);
-            this.flowLayoutPanel1.Controls.Add(this.LblMsg);
+            this.flowLayoutPanel1.Controls.Add(this.lblMsg);
             this.flowLayoutPanel1.Controls.Add(this.BtnZmenit);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -61,12 +61,12 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.TxtKontrola, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.TxtNove, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtKontrola, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtNove, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.TxtStare, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtStare, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(33, 33);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
@@ -76,23 +76,23 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(316, 170);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // TxtKontrola
+            // txtKontrola
             // 
-            this.TxtKontrola.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtKontrola.Location = new System.Drawing.Point(161, 127);
-            this.TxtKontrola.Name = "TxtKontrola";
-            this.TxtKontrola.PasswordChar = '*';
-            this.TxtKontrola.Size = new System.Drawing.Size(152, 27);
-            this.TxtKontrola.TabIndex = 5;
+            this.txtKontrola.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtKontrola.Location = new System.Drawing.Point(161, 127);
+            this.txtKontrola.Name = "txtKontrola";
+            this.txtKontrola.PasswordChar = '*';
+            this.txtKontrola.Size = new System.Drawing.Size(152, 27);
+            this.txtKontrola.TabIndex = 5;
             // 
-            // TxtNove
+            // txtNove
             // 
-            this.TxtNove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtNove.Location = new System.Drawing.Point(161, 70);
-            this.TxtNove.Name = "TxtNove";
-            this.TxtNove.PasswordChar = '*';
-            this.TxtNove.Size = new System.Drawing.Size(152, 27);
-            this.TxtNove.TabIndex = 4;
+            this.txtNove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNove.Location = new System.Drawing.Point(161, 70);
+            this.txtNove.Name = "txtNove";
+            this.txtNove.PasswordChar = '*';
+            this.txtNove.Size = new System.Drawing.Size(152, 27);
+            this.txtNove.TabIndex = 4;
             // 
             // label1
             // 
@@ -136,25 +136,25 @@
             this.label3.Text = "Kontrola:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // TxtStare
+            // txtStare
             // 
-            this.TxtStare.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtStare.Location = new System.Drawing.Point(161, 14);
-            this.TxtStare.Name = "TxtStare";
-            this.TxtStare.PasswordChar = '*';
-            this.TxtStare.Size = new System.Drawing.Size(152, 27);
-            this.TxtStare.TabIndex = 3;
+            this.txtStare.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStare.Location = new System.Drawing.Point(161, 14);
+            this.txtStare.Name = "txtStare";
+            this.txtStare.PasswordChar = '*';
+            this.txtStare.Size = new System.Drawing.Size(152, 27);
+            this.txtStare.TabIndex = 3;
             // 
-            // LblMsg
+            // lblMsg
             // 
-            this.LblMsg.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.LblMsg.AutoSize = true;
-            this.LblMsg.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.LblMsg.ForeColor = System.Drawing.Color.Firebrick;
-            this.LblMsg.Location = new System.Drawing.Point(191, 206);
-            this.LblMsg.Name = "LblMsg";
-            this.LblMsg.Size = new System.Drawing.Size(0, 23);
-            this.LblMsg.TabIndex = 7;
+            this.lblMsg.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.lblMsg.AutoSize = true;
+            this.lblMsg.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblMsg.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblMsg.Location = new System.Drawing.Point(191, 206);
+            this.lblMsg.Name = "lblMsg";
+            this.lblMsg.Size = new System.Drawing.Size(0, 23);
+            this.lblMsg.TabIndex = 7;
             // 
             // BtnZmenit
             // 
@@ -198,9 +198,9 @@
         private Label label2;
         private Label label3;
         private Button BtnZmenit;
-        private TextBox TxtKontrola;
-        private TextBox TxtNove;
-        private TextBox TxtStare;
-        private Label LblMsg;
+        private TextBox txtKontrola;
+        private TextBox txtNove;
+        private TextBox txtStare;
+        private Label lblMsg;
     }
 }

@@ -38,9 +38,9 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
         InitTable(preload);
     }
 
-    public static TableProvider<Table> GetTableProvider()
+    public static TableProvider<Table> GetTableProvider(bool preload = false)
     {
-        return (name, fileSupport) => new Table(name, fileSupport);
+        return (name, fileSupport) => new Table(name, fileSupport, preload);
     }
 
     protected virtual void InitTable(bool preload)
@@ -203,8 +203,8 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
             if (value is not null && FindId(id, out int lineNumber))
             {
                 rows[lineNumber] = value;
-                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                 fileSupporter.UpdateLine(Name, currentPage, head.Entity.ToString(value, head.Separator), lineNumber);
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
             }
         }
     }
@@ -226,8 +226,8 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
             if (value is not null && FindId(id, index, out int lineNumber))
             {
                 rows[lineNumber] = value;
-                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                 fileSupporter.UpdateLine(Name, currentPage, head.Entity.ToString(value, head.Separator), lineNumber);
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
             }
         }
     }
@@ -236,7 +236,7 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
     {
         line[0] = ++head.MaxId;
         fileSupporter.UpdateInfo(Meta);
-        
+
         int page = FindFreeSpace();
         fileSupporter.AppendLine(Name, page, head.Entity.ToString(line, head.Separator));
         int lineNumber = 0;
@@ -254,6 +254,21 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
         if (tmp is not null)
         {
             Add(tmp);
+        }
+    }
+
+    public virtual void Update(TableLine line)
+    {
+        if (FindId(line.GetId(), out int lineNumber))
+        {
+            OnRowRequested(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+            rows[lineNumber] = line;
+            fileSupporter.UpdateLine(Name, currentPage, head.Entity.ToString(line, head.Separator), lineNumber);
+            OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        }
+        else
+        {
+            Add(line);
         }
     }
 

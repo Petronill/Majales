@@ -46,12 +46,12 @@
             this.SmazatSekci = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazSekce = new System.Windows.Forms.ToolStripMenuItem();
             this.SekceMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.FiltrovatSekce = new System.Windows.Forms.ToolStripMenuItem();
             this.ClenoveMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovyClen = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatCleny = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatClena = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazCleny = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatSekce = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatCleny = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -108,6 +108,7 @@
             this.SekceView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.JmenoHeader,
             this.EmailHeader});
+            this.SekceView.ContextMenuStrip = this.SekceMenu;
             this.SekceView.GridLines = true;
             this.SekceView.Location = new System.Drawing.Point(40, 78);
             this.SekceView.Margin = new System.Windows.Forms.Padding(10);
@@ -157,6 +158,7 @@
             this.KrestniHeader,
             this.PrijmeniHeader,
             this.FunkceHeader});
+            this.listView1.ContextMenuStrip = this.ClenoveMenu;
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(40, 78);
             this.listView1.Margin = new System.Windows.Forms.Padding(10);
@@ -210,6 +212,12 @@
             this.SekceMenu.Name = "contextMenuStrip1";
             this.SekceMenu.Size = new System.Drawing.Size(140, 100);
             // 
+            // FiltrovatSekce
+            // 
+            this.FiltrovatSekce.Name = "FiltrovatSekce";
+            this.FiltrovatSekce.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatSekce.Text = "Filtrovat";
+            // 
             // ClenoveMenu
             // 
             this.ClenoveMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -219,37 +227,31 @@
             this.SmazatClena,
             this.SmazCleny});
             this.ClenoveMenu.Name = "ClenoveMenu";
-            this.ClenoveMenu.Size = new System.Drawing.Size(211, 128);
+            this.ClenoveMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // NovyClen
             // 
             this.NovyClen.Name = "NovyClen";
-            this.NovyClen.Size = new System.Drawing.Size(210, 24);
+            this.NovyClen.Size = new System.Drawing.Size(139, 24);
             this.NovyClen.Text = "Nový";
+            // 
+            // FiltrovatCleny
+            // 
+            this.FiltrovatCleny.Name = "FiltrovatCleny";
+            this.FiltrovatCleny.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatCleny.Text = "Filtrovat";
             // 
             // SmazatClena
             // 
             this.SmazatClena.Name = "SmazatClena";
-            this.SmazatClena.Size = new System.Drawing.Size(210, 24);
+            this.SmazatClena.Size = new System.Drawing.Size(139, 24);
             this.SmazatClena.Text = "Smazat";
             // 
             // SmazCleny
             // 
             this.SmazCleny.Name = "SmazCleny";
-            this.SmazCleny.Size = new System.Drawing.Size(210, 24);
+            this.SmazCleny.Size = new System.Drawing.Size(139, 24);
             this.SmazCleny.Text = "Smaž vše";
-            // 
-            // FiltrovatSekce
-            // 
-            this.FiltrovatSekce.Name = "FiltrovatSekce";
-            this.FiltrovatSekce.Size = new System.Drawing.Size(139, 24);
-            this.FiltrovatSekce.Text = "Filtrovat";
-            // 
-            // FiltrovatCleny
-            // 
-            this.FiltrovatCleny.Name = "FiltrovatCleny";
-            this.FiltrovatCleny.Size = new System.Drawing.Size(210, 24);
-            this.FiltrovatCleny.Text = "Filtrovat";
             // 
             // TeamWindow
             // 

@@ -2,7 +2,6 @@
 
 namespace DatabaseDefinitions;
 
-[Serializable]
 public struct TableHead
 {
     public string Separator { get; set; }

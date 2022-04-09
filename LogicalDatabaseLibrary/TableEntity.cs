@@ -1,13 +1,16 @@
-﻿using LogicalDatabaseLibrary.Attrs;
-using ArrayUtilsLibrary;
+﻿using ArrayUtilsLibrary;
 
 namespace LogicalDatabaseLibrary;
 
 public class TableEntity : Entity
 {
-    public TableEntity(params IAttr[] attributes) : base(attributes)
+    public TableEntity(params Attr[] attributes) : base(attributes)
     {
-        ArrayUtils.Prepend(ref attrs, new PrimaryAttr());
+        ArrayUtils.Prepend(ref attrs, new Attr("rowId", typeof(int)));
+    }
+
+    private TableEntity(bool done, params Attr[] attributes) : base(attributes)
+    {
     }
 
     public new TableLine? FromTokens(string[] tokens)
@@ -72,5 +75,10 @@ public class TableEntity : Entity
         }
 
         return new TableLine(tmp);
+    }
+
+    public static new TableEntity? EntityFromTokens(string[] tokens)
+    {
+        return new TableEntity(true, AttrsFromTokens(tokens));
     }
 }

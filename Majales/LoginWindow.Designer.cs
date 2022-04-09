@@ -33,13 +33,15 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.JmenoBox = new System.Windows.Forms.TextBox();
+            this.jmenoBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.HesloBox = new System.Windows.Forms.TextBox();
+            this.hesloBox = new System.Windows.Forms.TextBox();
+            this.lblMsg = new System.Windows.Forms.Label();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.BtnPrihlasit = new System.Windows.Forms.Button();
             this.BtnZapomenute = new System.Windows.Forms.Button();
+            this.chckName = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -51,6 +53,7 @@
             this.flowLayoutPanel1.Controls.Add(this.pictureBox1);
             this.flowLayoutPanel1.Controls.Add(this.label1);
             this.flowLayoutPanel1.Controls.Add(this.tableLayoutPanel1);
+            this.flowLayoutPanel1.Controls.Add(this.lblMsg);
             this.flowLayoutPanel1.Controls.Add(this.flowLayoutPanel2);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -85,7 +88,7 @@
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(0, 30, 0, 60);
             this.label1.Size = new System.Drawing.Size(370, 149);
-            this.label1.TabIndex = 1;
+            this.label1.TabIndex = 5;
             this.label1.Text = "Kolínský Majáles";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -96,28 +99,30 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.67567F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.32433F));
-            this.tableLayoutPanel1.Controls.Add(this.JmenoBox, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.jmenoBox, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.HesloBox, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.hesloBox, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.chckName, 1, 2);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 360);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 30);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(366, 125);
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(366, 141);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
-            // JmenoBox
+            // jmenoBox
             // 
-            this.JmenoBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.jmenoBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.JmenoBox.Location = new System.Drawing.Point(170, 3);
-            this.JmenoBox.Name = "JmenoBox";
-            this.JmenoBox.Size = new System.Drawing.Size(193, 27);
-            this.JmenoBox.TabIndex = 3;
+            this.jmenoBox.Location = new System.Drawing.Point(170, 3);
+            this.jmenoBox.Name = "jmenoBox";
+            this.jmenoBox.Size = new System.Drawing.Size(193, 27);
+            this.jmenoBox.TabIndex = 0;
             // 
             // label2
             // 
@@ -128,7 +133,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label2.Location = new System.Drawing.Point(3, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(161, 62);
+            this.label2.Size = new System.Drawing.Size(161, 47);
             this.label2.TabIndex = 0;
             this.label2.Text = "Uživatelské jméno:";
             // 
@@ -139,29 +144,41 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(3, 62);
+            this.label3.Location = new System.Drawing.Point(3, 47);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(161, 63);
+            this.label3.Size = new System.Drawing.Size(161, 47);
             this.label3.TabIndex = 1;
             this.label3.Text = "Heslo:";
             // 
-            // HesloBox
+            // hesloBox
             // 
-            this.HesloBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.hesloBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.HesloBox.Location = new System.Drawing.Point(170, 65);
-            this.HesloBox.Name = "HesloBox";
-            this.HesloBox.PasswordChar = '*';
-            this.HesloBox.Size = new System.Drawing.Size(193, 27);
-            this.HesloBox.TabIndex = 2;
+            this.hesloBox.Location = new System.Drawing.Point(170, 50);
+            this.hesloBox.Name = "hesloBox";
+            this.hesloBox.PasswordChar = '*';
+            this.hesloBox.Size = new System.Drawing.Size(193, 27);
+            this.hesloBox.TabIndex = 1;
+            // 
+            // lblMsg
+            // 
+            this.lblMsg.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.lblMsg.AutoSize = true;
+            this.lblMsg.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblMsg.ForeColor = System.Drawing.Color.Firebrick;
+            this.lblMsg.Location = new System.Drawing.Point(188, 506);
+            this.lblMsg.Margin = new System.Windows.Forms.Padding(3, 0, 3, 30);
+            this.lblMsg.Name = "lblMsg";
+            this.lblMsg.Size = new System.Drawing.Size(0, 23);
+            this.lblMsg.TabIndex = 8;
             // 
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel2.Controls.Add(this.BtnPrihlasit);
             this.flowLayoutPanel2.Controls.Add(this.BtnZapomenute);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 518);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 562);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             this.flowLayoutPanel2.Size = new System.Drawing.Size(370, 75);
@@ -178,7 +195,7 @@
             this.BtnPrihlasit.Name = "BtnPrihlasit";
             this.BtnPrihlasit.Padding = new System.Windows.Forms.Padding(5);
             this.BtnPrihlasit.Size = new System.Drawing.Size(124, 48);
-            this.BtnPrihlasit.TabIndex = 4;
+            this.BtnPrihlasit.TabIndex = 2;
             this.BtnPrihlasit.Text = "Přihlásit se";
             this.BtnPrihlasit.UseVisualStyleBackColor = true;
             this.BtnPrihlasit.Click += new System.EventHandler(this.BtnPrihlasit_Click);
@@ -194,10 +211,20 @@
             this.BtnZapomenute.Name = "BtnZapomenute";
             this.BtnZapomenute.Padding = new System.Windows.Forms.Padding(5);
             this.BtnZapomenute.Size = new System.Drawing.Size(180, 48);
-            this.BtnZapomenute.TabIndex = 5;
+            this.BtnZapomenute.TabIndex = 3;
             this.BtnZapomenute.Text = "Zapomenuté heslo";
             this.BtnZapomenute.UseVisualStyleBackColor = true;
             this.BtnZapomenute.Click += new System.EventHandler(this.BtnZapomenute_Click);
+            // 
+            // chckName
+            // 
+            this.chckName.AutoSize = true;
+            this.chckName.Location = new System.Drawing.Point(170, 97);
+            this.chckName.Name = "chckName";
+            this.chckName.Size = new System.Drawing.Size(181, 24);
+            this.chckName.TabIndex = 4;
+            this.chckName.Text = "zapamatovat uživatele";
+            this.chckName.UseVisualStyleBackColor = true;
             // 
             // LoginWindow
             // 
@@ -227,11 +254,13 @@
         private Label label1;
         private Button BtnPrihlasit;
         private TableLayoutPanel tableLayoutPanel1;
-        private TextBox JmenoBox;
+        private TextBox jmenoBox;
         private Label label2;
         private Label label3;
-        private TextBox HesloBox;
+        private TextBox hesloBox;
         private FlowLayoutPanel flowLayoutPanel2;
         private Button BtnZapomenute;
+        private Label lblMsg;
+        private CheckBox chckName;
     }
 }

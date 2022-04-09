@@ -1,16 +1,18 @@
 ﻿using DatabaseDefinitions;
+using LogicalDatabaseLibrary;
+using System.Text;
 
 namespace FileSupportLibrary;
 
 public class FileSupporter : IFileSupport
 {
-    protected string pthspr = "\\";   //path filename separator
     protected string flext = ".csv";  //common page file extension
-    protected string inffl = "info.bin";  //info file
+    protected string inffl = "info.txt";  //info file
+    protected string dftspr = ";";  //default separator
     protected int defaultStartPage = 0;
-    public string PathSeparator { get => pthspr; set => pthspr = value; }
     public string FileExtension { get => flext; set => flext = value; }
     public string InfoFile { get => inffl; set => inffl = value; }
+    public string DefaultSeparator { get => dftspr; set => dftspr = value; }
     public int DefaultStartPage { get => defaultStartPage; set => defaultStartPage = 0; }
     public string Workspace { get; set; }
 
@@ -21,17 +23,17 @@ public class FileSupporter : IFileSupport
 
     protected string FullPageName(string tableName, int page)
     {
-        return FullTableName(tableName) + pthspr + page + flext;
+        return Path.Combine(FullTableName(tableName), page + flext);
     }
 
     protected string FullInfofileName(string tableName)
     {
-        return FullTableName(tableName) + pthspr + inffl;
+        return Path.Combine(FullTableName(tableName), inffl);
     }
 
     protected string FullTableName(string tableName)
     {
-        return Workspace + pthspr + tableName;
+        return Path.Combine(Workspace, tableName);
     }
 
     public int AllPages(TableMeta tableMeta)
@@ -50,8 +52,7 @@ public class FileSupporter : IFileSupport
         LinkedList<string> tables = new();
         foreach (string dir in Directory.GetDirectories(Workspace))
         {
-            string[] tmps = dir.Split(pthspr);
-            string tmp = tmps[tmps.Length - 1];
+            string tmp = dir.Remove(0, Workspace.Length + 1);
             if (ExistsTable(tmp))
             {
                 tables.AddLast(tmp);
@@ -62,22 +63,22 @@ public class FileSupporter : IFileSupport
 
     public bool ExistsFile(string filename)
     {
-        return File.Exists(Workspace + pthspr + filename);
+        return File.Exists(Path.Combine(Workspace, filename));
     }
 
     public bool ExistsDirectory(string name)
     {
-        return Directory.Exists(Workspace + pthspr + name);
+        return Directory.Exists(Path.Combine(Workspace, name));
     }
 
     public bool ExistsTable(string name)
     {
-        return ExistsDirectory(name) && ExistsFile(name + pthspr + inffl);
+        return ExistsDirectory(name) && ExistsFile(Path.Combine(name, inffl));
     }
 
     public bool ExistsPage(string tableName, int page)
     {
-        return ExistsTable(tableName) && ExistsFile(tableName + pthspr + page + flext);
+        return ExistsTable(tableName) && ExistsFile(Path.Combine(tableName, page + flext));
     }
 
     public bool GetInfo(string tableName, out TableHead head)
@@ -91,7 +92,54 @@ public class FileSupporter : IFileSupport
 
         try
         {
-            head = IFileSupport.BinaryDeserialize<TableHead>(FullInfofileName(tableName));
+            try
+            {
+                using StreamReader sr = File.OpenText(FullInfofileName(tableName));
+
+                string? line = sr.ReadLine();
+                if (line is null)
+                {
+                    return false;
+                }
+                head.Separator = line;
+
+                line = sr.ReadLine();
+                if (line is null || !int.TryParse(line, out int lineLimit))
+                {
+                    return false;
+                }
+                head.LineLimit = lineLimit;
+
+                line = sr.ReadLine();
+                if (line is null || !int.TryParse(line, out int startPage))
+                {
+                    return false;
+                }
+                head.StartPage = startPage;
+
+                line = sr.ReadLine();
+                if (line is null)
+                {
+                    return false;
+                }
+                TableEntity? ent = TableEntity.EntityFromTokens(line.Split(dftspr));
+                if (ent is null)
+                {
+                    return false;
+                }
+                head.Entity = ent;
+
+                line = sr.ReadLine();
+                if (line is null || !int.TryParse(line, out int maxId))
+                {
+                    return false;
+                }
+                head.MaxId = maxId;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         catch (Exception)
         {
@@ -110,7 +158,14 @@ public class FileSupporter : IFileSupport
 
         try
         {
-            IFileSupport.BinarySerialize(FullInfofileName(tableMeta.TableName), tableMeta.Head);
+            using StreamWriter sw = File.CreateText(FullInfofileName(tableMeta.TableName));
+            string write = new StringBuilder().AppendLine(tableMeta.Head.Separator)
+                .AppendLine(tableMeta.Head.LineLimit.ToString())
+                .AppendLine(tableMeta.Head.StartPage.ToString())
+                .AppendLine(tableMeta.Head.Entity.ToString(dftspr))
+                .AppendLine(tableMeta.Head.MaxId.ToString()).ToString();
+            sw.Write(write);
+
         }
         catch (Exception)
         {
@@ -127,13 +182,19 @@ public class FileSupporter : IFileSupport
             try
             {
                 Directory.CreateDirectory(FullTableName(tableMeta.TableName));
-                File.Create(FullTableName(tableMeta.TableName) + pthspr + inffl);
-                IFileSupport.BinarySerialize(FullInfofileName(tableMeta.TableName), tableMeta.Head);
-                File.Create(FullPageName(tableMeta.TableName, tableMeta.Head.StartPage));
-                return true;
+                File.Create(Path.Combine(FullTableName(tableMeta.TableName), inffl)).Close();
+                File.Create(FullPageName(tableMeta.TableName, tableMeta.Head.StartPage)).Close();
+                return UpdateInfo(tableMeta);
             }
             catch (Exception)
             {
+                try
+                {
+                    File.Delete(Path.Combine(FullTableName(tableMeta.TableName), inffl));
+                    File.Delete(FullPageName(tableMeta.TableName, tableMeta.Head.StartPage));
+                } catch (Exception)
+                {
+                }
                 return false;
             }
         }
@@ -205,7 +266,7 @@ public class FileSupporter : IFileSupport
         {
             try
             {
-                File.Create(FullPageName(tableName, page));
+                File.Create(FullPageName(tableName, page)).Close();
                 return true;
             }
             catch (Exception)

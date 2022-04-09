@@ -47,14 +47,14 @@
             this.NahledHeader = new System.Windows.Forms.ColumnHeader();
             this.UkolyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovyUkol = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatUkoly = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatUkol = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazUkoly = new System.Windows.Forms.ToolStripMenuItem();
             this.KomentareMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovyKomentar = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatKomentare = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatKomentar = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazKomentare = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatUkoly = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatKomentare = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -114,6 +114,7 @@
             this.UzaverkaHeader,
             this.PrioritaHeader,
             this.StavHeader});
+            this.SekceView.ContextMenuStrip = this.UkolyMenu;
             this.SekceView.GridLines = true;
             this.SekceView.Location = new System.Drawing.Point(40, 78);
             this.SekceView.Margin = new System.Windows.Forms.Padding(10);
@@ -178,6 +179,7 @@
             this.AutorHeader,
             this.DatumHeader,
             this.NahledHeader});
+            this.listView1.ContextMenuStrip = this.KomentareMenu;
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(40, 78);
             this.listView1.Margin = new System.Windows.Forms.Padding(10);
@@ -219,6 +221,12 @@
             this.NovyUkol.Size = new System.Drawing.Size(139, 24);
             this.NovyUkol.Text = "Nový";
             // 
+            // FiltrovatUkoly
+            // 
+            this.FiltrovatUkoly.Name = "FiltrovatUkoly";
+            this.FiltrovatUkoly.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatUkoly.Text = "Filtrovat";
+            // 
             // SmazatUkol
             // 
             this.SmazatUkol.Name = "SmazatUkol";
@@ -240,37 +248,31 @@
             this.SmazatKomentar,
             this.SmazKomentare});
             this.KomentareMenu.Name = "KomentareMenu";
-            this.KomentareMenu.Size = new System.Drawing.Size(211, 128);
+            this.KomentareMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // NovyKomentar
             // 
             this.NovyKomentar.Name = "NovyKomentar";
-            this.NovyKomentar.Size = new System.Drawing.Size(210, 24);
+            this.NovyKomentar.Size = new System.Drawing.Size(139, 24);
             this.NovyKomentar.Text = "Nový";
+            // 
+            // FiltrovatKomentare
+            // 
+            this.FiltrovatKomentare.Name = "FiltrovatKomentare";
+            this.FiltrovatKomentare.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatKomentare.Text = "Filtrovat";
             // 
             // SmazatKomentar
             // 
             this.SmazatKomentar.Name = "SmazatKomentar";
-            this.SmazatKomentar.Size = new System.Drawing.Size(210, 24);
+            this.SmazatKomentar.Size = new System.Drawing.Size(139, 24);
             this.SmazatKomentar.Text = "Smazat";
             // 
             // SmazKomentare
             // 
             this.SmazKomentare.Name = "SmazKomentare";
-            this.SmazKomentare.Size = new System.Drawing.Size(210, 24);
+            this.SmazKomentare.Size = new System.Drawing.Size(139, 24);
             this.SmazKomentare.Text = "Smaž vše";
-            // 
-            // FiltrovatUkoly
-            // 
-            this.FiltrovatUkoly.Name = "FiltrovatUkoly";
-            this.FiltrovatUkoly.Size = new System.Drawing.Size(139, 24);
-            this.FiltrovatUkoly.Text = "Filtrovat";
-            // 
-            // FiltrovatKomentare
-            // 
-            this.FiltrovatKomentare.Name = "FiltrovatKomentare";
-            this.FiltrovatKomentare.Size = new System.Drawing.Size(210, 24);
-            this.FiltrovatKomentare.Text = "Filtrovat";
             // 
             // TaskWindow
             // 

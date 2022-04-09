@@ -22,9 +22,11 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         this.bufferCount = currentBuffer = bufferCount;
     }
 
-    public static new TableProvider<BufferedTable> GetTableProvider()
+    public static new TableProvider<BufferedTable> GetTableProvider(int bufferCount = 0, bool preload = false)
     {
-        return (name, fileSupport) => new BufferedTable(name, fileSupport);
+        return (name, fileSupport) => {
+            return new BufferedTable(name, fileSupport, bufferCount, preload);
+        };
     }
 
     protected virtual void BufferDecrement()
@@ -69,8 +71,8 @@ public class BufferedTable : Table, IComparable<BufferedTable>
             if (value is not null && FindId(id, out int lineNumber))
             {
                 rows[lineNumber] = value;
-                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
                 BufferDecrement();
+                OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
             }
         }
     }
@@ -93,6 +95,20 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
+    public virtual void Update(TableLine line)
+    {
+        if (FindId(line.GetId(), out int lineNumber))
+        {
+            OnRowRequested(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+            rows[lineNumber] = line;
+            BufferDecrement();
+            OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
+        }
+        else
+        {
+            Add(line);
+        }
+    }
     protected override void Remove(int id, int lineNumber)
     {
         ArrayUtils.Delete(ref rows, lineNumber);
@@ -100,8 +116,8 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         {
             head.MaxId--;
         }
-        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
         BufferDecrement();
+        OnRowDeleted(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
     public override void Clear()

@@ -1,14 +1,14 @@
-﻿using LogicalDatabaseLibrary.Attrs;
+﻿using LogicalDatabaseLibrary;
 using System.Collections;
 using System.Text;
 
 namespace LogicalDatabaseLibrary;
 
-public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
+public class Entity : IEnumerable<Attr>, IEquatable<Entity>
 {
-    protected IAttr[] attrs;
+    protected Attr[] attrs;
 
-    public Entity(params IAttr[] attributes)
+    public Entity(params Attr[] attributes)
     {
         attrs = attributes;
     }
@@ -18,12 +18,12 @@ public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
         return attrs.Length;
     }
 
-    public IAttr? this[int i]
+    public Attr? this[int i]
     {
         get => (i >= 0 && i < attrs.Length) ? attrs[i] : null;
     }
 
-    public IAttr? this[string name]
+    public Attr? this[string name]
     {
         get => this[GetIndex(name)];
     }
@@ -32,7 +32,7 @@ public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
     {
         for (int i = 0; i < attrs.Length; i++)
         {
-            if (attrs[i].GetName() == name)
+            if (attrs[i].Name == name)
             {
                 return i;
             }
@@ -72,6 +72,36 @@ public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
         return sb.Remove(sb.Length - 1, 1).ToString();
     }
 
+    public string ToString(string separator)
+    {
+        StringBuilder sb = new();
+        foreach (Attr attr in attrs)
+        {
+            sb.Append(attr.ToString()).Append(separator);
+        }
+        return sb.Remove(sb.Length - separator.Length, separator.Length).ToString();
+    }
+
+    protected static Attr[] AttrsFromTokens(string[] tokens)
+    {
+        List<Attr> ats = new();
+        foreach (string token in tokens)
+        {
+            Attr? tmp = Attr.NewFromString(token);
+            if (tmp is null)
+            {
+                return null;
+            }
+            ats.Add(tmp);
+        }
+        return ats.ToArray();
+    }
+
+    public static Entity? EntityFromTokens(string[] tokens)
+    {
+        return new Entity(AttrsFromTokens(tokens));
+    }
+
     public bool Equals(Entity? other)
     {
         if (other == null || this.Count() == other.Count())
@@ -99,9 +129,9 @@ public class Entity : IEnumerable<IAttr>, IEquatable<Entity>
         return HashCode.Combine(attrs);
     }
 
-    public IEnumerator<IAttr> GetEnumerator()
+    public IEnumerator<Attr> GetEnumerator()
     {
-        return ((IEnumerable<IAttr>)attrs).GetEnumerator();
+        return ((IEnumerable<Attr>)attrs).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -10,7 +10,7 @@ public class Line : IEnumerable<object?>, IEquatable<Line>
     {
     }
 
-    public Line(object?[] content)
+    public Line(params object?[] content)
     {
         this.content = content;
     }

@@ -99,11 +99,10 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
 
     public T? Add(TableMeta meta)
     {
-        T? t = tables[meta.TableName];
-        if (t is not null)
+        if (ContainsTable(meta.TableName))
         {
             OnTableUpdated(new TableUpdateArgs { Name = meta.TableName });
-            return t;
+            return tables[meta.TableName];
         }
         return Create(meta);
     }
@@ -173,11 +172,10 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
 
     public override string ToString()
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         foreach (T t in this)
         {
-            sb.Append(t.Name);
-            sb.Append('\n');
+            sb.Append(t.Name).Append('\n');
         }
         return sb.ToString();
     }

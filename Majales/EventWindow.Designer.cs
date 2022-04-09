@@ -46,14 +46,14 @@
             this.MistoHeader = new System.Windows.Forms.ColumnHeader();
             this.ProjektyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovyProjekt = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatProjekty = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatProjekt = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazProjekty = new System.Windows.Forms.ToolStripMenuItem();
             this.AkceMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NovaAkce = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiltrovatAkce = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazatAkci = new System.Windows.Forms.ToolStripMenuItem();
             this.SmazAkce = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatProjekty = new System.Windows.Forms.ToolStripMenuItem();
-            this.FiltrovatAkce = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -111,6 +111,7 @@
             this.NazevHeader,
             this.NarocnostHeader,
             this.StavHeader});
+            this.SekceView.ContextMenuStrip = this.ProjektyMenu;
             this.SekceView.GridLines = true;
             this.SekceView.Location = new System.Drawing.Point(40, 78);
             this.SekceView.Margin = new System.Windows.Forms.Padding(10);
@@ -166,6 +167,7 @@
             this.ZacatekHeader,
             this.KonecHeader,
             this.MistoHeader});
+            this.listView1.ContextMenuStrip = this.AkceMenu;
             this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(40, 78);
             this.listView1.Margin = new System.Windows.Forms.Padding(10);
@@ -212,6 +214,12 @@
             this.NovyProjekt.Size = new System.Drawing.Size(139, 24);
             this.NovyProjekt.Text = "Nový";
             // 
+            // FiltrovatProjekty
+            // 
+            this.FiltrovatProjekty.Name = "FiltrovatProjekty";
+            this.FiltrovatProjekty.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatProjekty.Text = "Filtrovat";
+            // 
             // SmazatProjekt
             // 
             this.SmazatProjekt.Name = "SmazatProjekt";
@@ -233,37 +241,31 @@
             this.SmazatAkci,
             this.SmazAkce});
             this.AkceMenu.Name = "contextMenuStrip5";
-            this.AkceMenu.Size = new System.Drawing.Size(211, 128);
+            this.AkceMenu.Size = new System.Drawing.Size(140, 100);
             // 
             // NovaAkce
             // 
             this.NovaAkce.Name = "NovaAkce";
-            this.NovaAkce.Size = new System.Drawing.Size(210, 24);
+            this.NovaAkce.Size = new System.Drawing.Size(139, 24);
             this.NovaAkce.Text = "Nová";
+            // 
+            // FiltrovatAkce
+            // 
+            this.FiltrovatAkce.Name = "FiltrovatAkce";
+            this.FiltrovatAkce.Size = new System.Drawing.Size(139, 24);
+            this.FiltrovatAkce.Text = "Filtrovat";
             // 
             // SmazatAkci
             // 
             this.SmazatAkci.Name = "SmazatAkci";
-            this.SmazatAkci.Size = new System.Drawing.Size(210, 24);
+            this.SmazatAkci.Size = new System.Drawing.Size(139, 24);
             this.SmazatAkci.Text = "Smazat";
             // 
             // SmazAkce
             // 
             this.SmazAkce.Name = "SmazAkce";
-            this.SmazAkce.Size = new System.Drawing.Size(210, 24);
+            this.SmazAkce.Size = new System.Drawing.Size(139, 24);
             this.SmazAkce.Text = "Smaž vše";
-            // 
-            // FiltrovatProjekty
-            // 
-            this.FiltrovatProjekty.Name = "FiltrovatProjekty";
-            this.FiltrovatProjekty.Size = new System.Drawing.Size(139, 24);
-            this.FiltrovatProjekty.Text = "Filtrovat";
-            // 
-            // FiltrovatAkce
-            // 
-            this.FiltrovatAkce.Name = "FiltrovatAkce";
-            this.FiltrovatAkce.Size = new System.Drawing.Size(210, 24);
-            this.FiltrovatAkce.Text = "Filtrovat";
             // 
             // EventWindow
             // 

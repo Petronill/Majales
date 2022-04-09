@@ -5,7 +5,6 @@ namespace FileSupportLibrary;
 
 public interface IFileSupport
 {
-	public abstract string PathSeparator { get; set; }
 	public abstract string FileExtension { get; set; }
 	public abstract string InfoFile { get; set; }
 	public abstract int DefaultStartPage { get; set; }
@@ -62,16 +61,4 @@ public interface IFileSupport
 	public abstract int DeletePagesIfEmpty(string tableName, int[] pages);
 
 	public abstract int DeleteAllEmptyPages(TableMeta tableMeta);
-
-	public static void BinarySerialize<T>(string path, T write, bool append = false)
-	{
-        using Stream stream = File.Open(path, append ? FileMode.Append : FileMode.Create);
-        new BinaryFormatter().Serialize(stream, write);
-    }
-
-	public static T BinaryDeserialize<T>(string path)
-	{
-        using Stream stream = File.Open(path, FileMode.Open);
-        return (T) (new BinaryFormatter().Deserialize(stream));
-    }
 }
