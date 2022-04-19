@@ -1,12 +1,14 @@
-﻿namespace LogicalDatabaseLibrary;
+﻿using MiscLibrary.Sanitizing;
 
-public class Attr : IEquatable<Attr>
+namespace LogicalDatabaseLibrary;
+
+public class Attr : IEquatable<Attr>, IInputSanitizable<object?>
 {
 	private string name;
-	public string Name { get => name; }
+	public virtual string Name { get => name; }
 
 	private Type type;
-	public Type Type { get => type; }
+	public virtual Type Type { get => type; }
 
 	public Attr(string name) : this(name, typeof(string))
     {
@@ -18,10 +20,15 @@ public class Attr : IEquatable<Attr>
 		this.type = type;
     }
 
-	public string TypeToString()
+	public virtual string TypeToString()
 	{
 		return type.Name;
 	}
+
+	public virtual object? Default()
+    {
+		return (type.IsValueType) ? Activator.CreateInstance(type): null;
+    }
 
 	public override string ToString()
     {
@@ -35,14 +42,18 @@ public class Attr : IEquatable<Attr>
 		return (t is not null) ? new Attr(tokens[1], t) : null;
 	}
 
-	public bool Check(object o) => o.GetType() == type;
+	public virtual bool Check(object? o) => o?.GetType() == type || (o is null && Nullable.GetUnderlyingType(type) is not null);
 
-	public string? ToString(object o)
+	public virtual string? ToString(object? o)
     {
-		return (o is null || !Check(o)) ? "" : o.ToString();
+		if (!Check(o))
+        {
+            throw new UnsanitizedInputException();
+        }
+		return o is null ? "" : o.ToString();
     }
 
-	public object? FromString(string str)
+	public virtual object? FromString(string str)
     {
 		if (type == typeof(string))
         {
@@ -56,5 +67,15 @@ public class Attr : IEquatable<Attr>
         return obj is not null &&
                name == obj.name &&
                type == obj.type;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Attr attr && this.Equals(attr);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(type, name);
     }
 }

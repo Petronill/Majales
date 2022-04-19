@@ -3,25 +3,54 @@ using DatabaseLibrary;
 using DatabaseLibrary.Indexes;
 using LogicalDatabaseLibrary;
 using FileSupportLibrary;
+using MiscLibrary;
+using MiscLibrary.Sanitizing;
 
 namespace ClientLibrary;
 
 public class SimpleManager : IDatabaseManager
 {
     protected IndexTree<DatabaseIndex<BufferedTable>, string, BufferedTable> databases = new();
+    protected SimpleDomainFactory<BufferedTable> domainFactory;
     protected IDatabaseSupport supporter;
 
     public SimpleManager()
     {
         supporter = new DatabaseSupporter();
+        domainFactory = new(databases);
     }
 
     public SimpleManager(IDatabaseSupport databaseSupporter)
     {
         supporter = databaseSupporter;
+        domainFactory = new(databases);
     }
-    
-    public bool NewDatabase(DatabaseMeta dtbmeta)
+
+    protected static void AssertSanitizedTableLine(BufferedTable table, TableLine line)
+    {
+        if (!table.Check(line))
+        {
+            throw new UnsanitizedInputException();
+        }
+    }
+
+    protected static TableSelector TableSelectorExtension(TableSelector tblsel, int attrIndex, object? value)
+    {
+        return (tbl) =>
+        {
+            return tblsel(tbl) && tbl.Meta.Head.Entity[attrIndex] is not null && tbl.Meta.Head.Entity[attrIndex].Check(value);
+        };
+    }
+
+    protected static TableSelector TableSelectorExtension(TableSelector tblsel, string attrName, object? value)
+    {
+        return (tbl) =>
+        {
+            return tblsel(tbl) && tbl.Meta.Head.Entity[attrName] is not null && tbl.Meta.Head.Entity[attrName].Check(value);
+        };
+    }
+
+    public virtual bool NewDatabase(DatabaseMeta dtbmeta)
     {
         if (databases.ContainsKey(dtbmeta.Name) || !supporter.Create(dtbmeta))
         {
@@ -32,33 +61,25 @@ public class SimpleManager : IDatabaseManager
         return true;
     }
 
-    public int AddLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
+    public virtual int AddLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        table.Add(line);
-                        count++;
-                    }
-                }
-            }
+            AssertSanitizedTableLine(table, line);
+            table.Add(line);
+            count++;
         }
 
         return count;
     }
 
-    public int AddTable(DatabaseSelector dtbsel, TableMeta table)
+    public virtual int AddTable(DatabaseSelector dtbsel, TableMeta table)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var dtb in domainFactory.GetDatabaseDomain(dtbsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }) && dtb.Value.Add(table) is not null)
+            if (dtb.Add(table) is not null)
             {
                 count++;
             }
@@ -66,103 +87,79 @@ public class SimpleManager : IDatabaseManager
         return count;
     }
 
-    public int CloseDatabase(DatabaseSelector dtbsel)
+    public virtual int CloseDatabase(DatabaseSelector dtbsel)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var dtb in domainFactory.GetDatabaseMetaDomain(dtbsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }) && databases.Remove(dtb.Key) is not null)
+            if (databases.Remove(dtb.Name) is not null)
             {
                 count++;
             }
         }
-
         return count;
     }
 
-    public int DeleteDatabase(DatabaseSelector dtbsel)
+    public virtual int DeleteDatabase(DatabaseSelector dtbsel)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var meta in domainFactory.GetDatabaseMetaDomain(dtbsel))
         {
-            DatabaseMeta meta = new() { Name = dtb.Key, Path = dtb.Value.Path };
-            if (dtbsel(meta) && databases.Remove(dtb.Key) is not null)
+            if (databases.Remove(meta.Name) is not null)
             {
                 supporter.Delete(meta);
                 count++;
             }
         }
-
         return count;
     }
 
-    public int DeleteLine(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
+    public virtual int DeleteLine(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            foreach (var row in domainFactory.GetRowDomain(table, rowsel))
             {
-                foreach (var table in dtb.Value)
+                if (table.Remove(row.Line.GetId()))
                 {
-                    if (tblsel(table))
-                    {
-                        foreach (var row in table)
-                        {
-                            if (rowsel(row) && table.Remove(row.Line.GetId()))
-                            {
-                                count++;
-                            }
-                        }
-                    }
+                    count++;
                 }
             }
         }
-
         return count;
     }
 
-    public int DeleteLine(DatabaseSelector dtbsel, TableSelector tblsel, int lineId)
+    public virtual int DeleteLine(DatabaseSelector dtbsel, TableSelector tblsel, int lineId)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            if (table.Remove(lineId))
             {
-                foreach (var table in dtb.Value)
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public virtual int DeleteTable(DatabaseSelector dtbsel, TableSelector tblsel)
+    {
+        int count = 0;
+        foreach (var dtb in domainFactory.GetDatabaseDomain(dtbsel))
+        {
+            foreach (var table in domainFactory.GetTableDomain(dtb, tblsel))
+            {
+                if (dtb.Delete(table.Name) is not null)
                 {
-                    if (tblsel(table) && table.Remove(lineId))
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
         }
-
         return count;
     }
 
-    public int DeleteTable(DatabaseSelector dtbsel, TableSelector tblsel)
-    {
-        int count = 0;
-        foreach (var dtb in databases)
-        {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table) && dtb.Value.Delete(table.Name) is not null)
-                    {
-                        count++;
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public DatabaseMeta[] GetAllDatabases()
+    public virtual DatabaseMeta[] GetAllDatabases()
     {
         List<DatabaseMeta> dtbs = new();
 
@@ -174,113 +171,73 @@ public class SimpleManager : IDatabaseManager
         return dtbs.ToArray();
     }
 
-    public TableLine[] GetAllLines(DatabaseSelector dtbsel, TableSelector tblsel)
+    public virtual TableLine[] GetAllLines(DatabaseSelector dtbsel, TableSelector tblsel)
     {
         List<TableLine> lines = new();
 
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            foreach (Row row in table)
             {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        foreach (Row row in table)
-                        {
-                            lines.Add(row.Line);
-                        }
-                    }
-                }
+                lines.Add(row.Line);
             }
         }
 
         return lines.ToArray();
     }
 
-    public Table[] GetAllTables(DatabaseSelector dtbsel)
+    public virtual Table[] GetAllTables(DatabaseSelector dtbsel)
     {
         List<Table> tables = new();
 
-        foreach (var dtb in databases)
+        foreach (var dtb in domainFactory.GetDatabaseDomain(dtbsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            foreach (var table in dtb)
             {
-                foreach (var table in dtb.Value)
-                {
-                    tables.Add(table);
-                }
+                tables.Add(table);
             }
         }
 
         return tables.ToArray();
     }
 
-    public DatabaseMeta[] GetDatabases(DatabaseSelector dtbsel)
+    public virtual DatabaseMeta[] GetDatabases(DatabaseSelector dtbsel)
     {
         List<DatabaseMeta> dtbs = new();
 
-        foreach (var dtb in databases)
+        foreach (var meta in domainFactory.GetDatabaseMetaDomain(dtbsel))
         {
-            DatabaseMeta meta = new() { Name = dtb.Key, Path = dtb.Value.Path };
-            if (dtbsel(meta))
-            {
-                dtbs.Add(meta);
-            }
+            dtbs.Add(meta);
         }
 
         return dtbs.ToArray();
     }
 
-    public Table[] GetDatabaseTables(DatabaseSelector dtbsel, TableSelector tblsel)
+    public virtual Table[] GetDatabaseTables(DatabaseSelector dtbsel, TableSelector tblsel)
     {
         List<Table> tables = new();
 
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        tables.Add(table);
-                    }
-                }
-            }
+            tables.Add(table);
         }
 
         return tables.ToArray();
     }
 
-    public TableLine[] GetTableLines(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
+    public virtual TableLine[] GetTableLines(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
     {
         List<TableLine> lines = new();
 
-        foreach (var dtb in databases)
+        foreach (Row row in domainFactory.GetRowDomain(dtbsel, tblsel, rowsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        foreach (Row row in table)
-                        {
-                            if (rowsel(row))
-                            {
-                                lines.Add(row.Line);
-                            }
-                        }
-                    }
-                }
-            }
+            lines.Add(row.Line);
         }
 
         return lines.ToArray();
     }
 
-    public TableLine? GetLine(string databaseName, string tableName, int lineId)
+    public virtual TableLine? GetLine(string databaseName, string tableName, int lineId)
     {
         if (databases.ContainsKey(databaseName))
         {
@@ -294,13 +251,13 @@ public class SimpleManager : IDatabaseManager
         return null;
     }
 
-    public T? GetAttr<T>(string databaseName, string tableName, int lineId, AttrSeparator<T> attrsep)
+    public virtual T? GetAttr<T>(string databaseName, string tableName, int lineId, AttrSeparator<T> attrsep)
     {
         TableLine? line = GetLine(databaseName, tableName, lineId);
         return (line is not null) ? attrsep(line) : default;
     }
 
-    public bool OpenDatabase(DatabaseMeta dtbmeta)
+    public virtual bool OpenDatabase(DatabaseMeta dtbmeta)
     {
         if (databases.ContainsKey(dtbmeta.Name) || !supporter.Exists(dtbmeta))
         {
@@ -311,215 +268,118 @@ public class SimpleManager : IDatabaseManager
         return true;
     }
 
-    public int SetLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
+    public virtual int SetLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        table[line.GetId()] = line;
-                        count++;
-                    }
-                }
-            }
+            AssertSanitizedTableLine(table, line);
+            table[line.GetId()] = line;
+            count++;
         }
-
         return count;
     }
 
-    public int UpdateLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
+    public virtual int UpdateLine(DatabaseSelector dtbsel, TableSelector tblsel, TableLine line)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, tblsel))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        table.Update(line);
-                        count++;
-                    }
-                }
-            }
+            AssertSanitizedTableLine(table, line);
+            table.Update(line);
+            count++;
         }
-
         return count;
     }
 
-    public int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel, int attrIndex, object? value)
+    public virtual int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel, int attrIndex, object? value)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, TableSelectorExtension(tblsel, attrIndex, value)))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            foreach (var row in domainFactory.GetRowDomain(table, rowsel))
             {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table) && table.Meta.Head.Entity[attrIndex] is not null && table.Meta.Head.Entity[attrIndex].Check(value))
-                    {
-                        foreach (var row in table)
-                        {
-                            if (rowsel(row))
-                            {
-                                TableLine line = row.Line;
-                                line[attrIndex] = value;
-                                table[line.GetId()] = line;
-                                count++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, int lineId, int attrIndex, object? value)
-    {
-        int count = 0;
-        foreach (var dtb in databases)
-        {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table) && table.Meta.Head.Entity[attrIndex] is not null && table.Meta.Head.Entity[attrIndex].Check(value))
-                    {
-                        TableLine? r = table?[lineId];
-                        if (r is not null)
-                        {
-                            r[attrIndex] = value;
-                            table[lineId] = r;
-                            count++;
-                        }
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel, string attrName, object? value)
-    {
-        int count = 0;
-        foreach (var dtb in databases)
-        {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table) && table.Meta.Head.Entity[attrName] is not null && table.Meta.Head.Entity[attrName].Check(value))
-                    {
-                        foreach (var row in table)
-                        {
-                            if (rowsel(row))
-                            {
-                                TableLine line = row.Line;
-                                line[table.Meta.Head.Entity.GetIndex(attrName)] = value;
-                                table[line.GetId()] = line;
-                                count++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, int lineId, string attrName, object? value)
-    {
-        int count = 0;
-        foreach (var dtb in databases)
-        {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table) && table.Meta.Head.Entity[attrName] is not null && table.Meta.Head.Entity[attrName].Check(value))
-                    {
-                        TableLine? r = table?[lineId];
-                        if (r is not null)
-                        {
-                            r[table.Meta.Head.Entity.GetIndex(attrName)] = value;
-                            table[lineId] = r;
-                            count++;
-                        }
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public int Contains(DatabaseSelector dtbsel)
-    {
-        int count = 0;
-        foreach (var dtb in databases)
-        {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
-            {
+                TableLine line = row.Line;
+                line[attrIndex] = value;
+                table[line.GetId()] = line;
                 count++;
             }
         }
-
         return count;
     }
 
-    public int Contains(DatabaseSelector dtbsel, TableSelector tblsel)
+    public virtual int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, int lineId, int attrIndex, object? value)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, TableSelectorExtension(tblsel, attrIndex, value)))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            TableLine? r = table?[lineId];
+            if (r is not null)
             {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        count++;
-                    }
-                }
+                r[attrIndex] = value;
+                table[lineId] = r;
+                count++;
             }
         }
-
         return count;
     }
 
-    public int Contains(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
+    public virtual int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel, string attrName, object? value)
     {
         int count = 0;
-        foreach (var dtb in databases)
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, TableSelectorExtension(tblsel, attrName, value)))
         {
-            if (dtbsel(new() { Name = dtb.Key, Path = dtb.Value.Path }))
+            foreach (var row in domainFactory.GetRowDomain(table, rowsel))
             {
-                foreach (var table in dtb.Value)
-                {
-                    if (tblsel(table))
-                    {
-                        foreach (var row in table)
-                        {
-                            if (rowsel(row))
-                            {
-                                count++;
-                            }
-                        }
-                    }
-                }
+                TableLine line = row.Line;
+                line[table.Meta.Head.Entity.GetIndex(attrName)] = value;
+                table[line.GetId()] = line;
+                count++;
             }
         }
-
         return count;
+    }
+
+    public virtual int SetAttr(DatabaseSelector dtbsel, TableSelector tblsel, int lineId, string attrName, object? value)
+    {
+        int count = 0;
+        foreach (var table in domainFactory.GetTableDomain(dtbsel, TableSelectorExtension(tblsel, attrName, value)))
+        {
+            TableLine? r = table?[lineId];
+            if (r is not null)
+            {
+                r[table.Meta.Head.Entity.GetIndex(attrName)] = value;
+                table[lineId] = r;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public virtual int Contains(DatabaseSelector dtbsel)
+    {
+        return domainFactory.GetDatabaseDomain(dtbsel).Count();
+    }
+
+    public virtual int Contains(DatabaseSelector dtbsel, TableSelector tblsel)
+    {
+        return domainFactory.GetTableDomain(dtbsel, tblsel).Count();
+    }
+
+    public virtual int Contains(DatabaseSelector dtbsel, TableSelector tblsel, RowSelector rowsel)
+    {
+        return domainFactory.GetRowDomain(dtbsel, tblsel, rowsel).Count();
+    }
+
+    public bool Check(Domain<Table> domain, TableLine input)
+    {
+        foreach (var table in domain)
+        {
+            if (!table.Check(input))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

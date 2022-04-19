@@ -1,30 +1,17 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using ClientLibrary;
-using LogicalDatabaseLibrary;
 
 namespace PasswordManagementLibrary;
 
 public class LocalPasswordManager : IPasswordManager
 {
     private static readonly int saltLength = 32;
-    private readonly IDatabaseManager dtb;
-    private static readonly string dtbName = ".secrets";
-    private static readonly string tblSalts = ".salts";
-    private static readonly string tblHashes = ".hashes";
+    private readonly IPasswordStorage storage;
 
     public int MinLength { get => 8; }
 
-    public LocalPasswordManager() : this(new SimpleManager())
-    {
-    }
-
-    public LocalPasswordManager(IDatabaseManager manager) {
-        dtb = manager;
-        if (!dtb.OpenDatabase(new() { Name = dtbName, Path = Path.Combine(Directory.GetCurrentDirectory(), dtbName) }))
-        {
-            throw new FileNotFoundException("Unable to open password database");
-        }
+    public LocalPasswordManager(IPasswordStorage storage) {
+        this.storage = storage;
     }
     
     private static string ComputeHash(string data)
@@ -36,31 +23,6 @@ public class LocalPasswordManager : IPasswordManager
     private static string ComputeHash(string password, string salt)
     {
         return ComputeHash(password + salt);
-    }
-
-    private TableLine? GetUserData(string tblName, string username)
-    {
-        TableLine[] lines = dtb.GetTableLines(
-           (dm) => dm.Name == dtbName,
-           (tm) => tm.Name == tblName,
-           (r) => (string)r.Line[1] == username
-        );
-
-        if (lines.Length == 1)
-        {
-            return lines[0];
-        }
-        return null;
-    }
-
-    private string? GetSalt(string username)
-    {
-        return (string?)GetUserData(tblSalts, username)?[2];
-    }
-
-    private string? GetHash(string username)
-    {
-        return (string?)GetUserData(tblHashes, username)?[2];
     }
 
     private static string NewSalt()
@@ -85,8 +47,8 @@ public class LocalPasswordManager : IPasswordManager
             throw new ArgumentException("Password too short");
         }
 
-        string? salt = GetSalt(username);
-        string? hash = GetHash(username);
+        string? salt = storage.GetSalt(username);
+        string? hash = storage.GetHash(username);
         return salt is not null && hash is not null && hash.Equals(ComputeHash(password, salt));
     }
 
@@ -98,42 +60,16 @@ public class LocalPasswordManager : IPasswordManager
             throw new ArgumentException("Password too short");
         }
         
-        bool uspech = false;
-        string? salt;
-        
-        TableLine? saltLine = GetUserData(tblSalts, username);
-
-        if (saltLine is null)
+        string? salt = storage.GetSalt(username);
+        if (salt is null)
         {
             salt = NewSalt();
-            uspech = dtb.AddLine(
-                (dm) => dm.Name == dtbName,
-                (tm) => tm.Name == tblSalts,
-                new(0, username, salt)
-            ) == 1;
-        }
-        else
-        {
-            salt = (string?)saltLine[2];
-            uspech = salt is not null;
+            if (!storage.AddSalt(username, salt))
+            {
+                return false;
+            }
         }
 
-        if (!uspech)
-        {
-            return false;
-        }
-
-        string hash = ComputeHash(password, salt);
-        return dtb.SetAttr(
-                (dm) => dm.Name == dtbName,
-                (tm) => tm.Name == tblHashes,
-                (r) => (string)r.Line[1] == username,
-                2, hash
-            ) == 1
-            || dtb.AddLine(
-                (dm) => dm.Name == dtbName,
-                (tm) => tm.Name == tblHashes,
-                new(0, username, hash)
-            ) == 1;
+        return storage.UpdateHash(username, ComputeHash(password, salt));
     }
 }

@@ -1,6 +1,4 @@
-﻿using DatabaseDefinitions;
-
-namespace DatabaseLibrary.Indexes;
+﻿namespace DatabaseLibrary.Indexes;
 
 public interface IIndex<K, V>
 {

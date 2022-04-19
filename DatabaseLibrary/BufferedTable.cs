@@ -1,4 +1,4 @@
-﻿using ArrayUtilsLibrary;
+﻿using MiscLibrary.ArrayUtils;
 using DatabaseDefinitions;
 using FileSupportLibrary;
 using LogicalDatabaseLibrary;
@@ -43,7 +43,7 @@ public class BufferedTable : Table, IComparable<BufferedTable>
     {
         if (changed)
         {
-            if (!fileSupporter.UpdateInfo(Meta) || fileSupporter.WriteLines(Name, currentPage, ToStrings()) != rows.Length)
+            if (!fileSupporter.UpdateInfo(Meta) || fileSupporter.WriteLines(Name, currentPage, ToSanitizedStrings()) != rows.Length)
             {
                 throw new IOException();
             }
@@ -79,7 +79,12 @@ public class BufferedTable : Table, IComparable<BufferedTable>
 
     public override void Add(TableLine line)
     {
-        line[0] = ++head.MaxId;
+        if (!Check(line))
+        {
+            throw new UnsanitizedInputException();
+        }
+
+        line[head.Entity.GetIndex("rowId")] = ++head.MaxId;
         int page = FindFreeSpace();
         int lineNumber = 0;
         if (page == currentPage)
@@ -89,14 +94,19 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         }
         else
         {
-            fileSupporter.AppendLine(Name, page, head.Entity.ToString(line, head.Separator));
+            fileSupporter.AppendLine(Name, page, fileSupporter.Sanitize(head.Entity.ToString(line, head.Separator)));
         }
         BufferDecrement();
         OnRowUpdated(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });
     }
 
-    public virtual void Update(TableLine line)
+    public override void Update(TableLine line)
     {
+        if (!Check(line))
+        {
+            throw new UnsanitizedInputException();
+        }
+
         if (FindId(line.GetId(), out int lineNumber))
         {
             OnRowRequested(new RowUpdateArgs { Row = new Row { Line = this[lineNumber], Meta = new RowMeta { PageNumber = currentPage, LineNumber = lineNumber } } });

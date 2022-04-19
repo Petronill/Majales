@@ -1,42 +1,39 @@
 ﻿using DatabaseDefinitions;
 using LogicalDatabaseLibrary;
+using MiscLibrary.Sanitizing;
 using System.Text;
 
 namespace FileSupportLibrary;
 
 public class FileSupporter : IFileSupport
 {
-    protected string flext = ".csv";  //common page file extension
-    protected string inffl = "info.txt";  //info file
-    protected string dftspr = ";";  //default separator
-    protected int defaultStartPage = 0;
-    public string FileExtension { get => flext; set => flext = value; }
-    public string InfoFile { get => inffl; set => inffl = value; }
-    public string DefaultSeparator { get => dftspr; set => dftspr = value; }
-    public int DefaultStartPage { get => defaultStartPage; set => defaultStartPage = 0; }
-    public string Workspace { get; set; }
+    public static readonly string flext = ".csv";  //common page file extension
+    public static readonly string inffl = "info.txt";  //info file
+    public static readonly int defaultStartPage = 0;
+    protected string workspace = GlobalDefinitions.WorkingDirectory;
+    public string Workspace { get => workspace; }
 
     public FileSupporter(string workdir)
     {
-        Workspace = workdir;
+        workspace = workdir;
     }
 
-    protected string FullPageName(string tableName, int page)
+    protected virtual string FullPageName(string tableName, int page)
     {
         return Path.Combine(FullTableName(tableName), page + flext);
     }
 
-    protected string FullInfofileName(string tableName)
+    protected virtual string FullInfofileName(string tableName)
     {
         return Path.Combine(FullTableName(tableName), inffl);
     }
 
-    protected string FullTableName(string tableName)
+    protected virtual string FullTableName(string tableName)
     {
-        return Path.Combine(Workspace, tableName);
+        return Path.Combine(workspace, tableName);
     }
 
-    public int AllPages(TableMeta tableMeta)
+    public virtual int AllPages(TableMeta tableMeta)
     {
         int count = 0;
 
@@ -47,12 +44,12 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public string[] AllTables()
+    public virtual string[] AllTables()
     {
         LinkedList<string> tables = new();
-        foreach (string dir in Directory.GetDirectories(Workspace))
+        foreach (string dir in Directory.GetDirectories(workspace))
         {
-            string tmp = dir.Remove(0, Workspace.Length + 1);
+            string tmp = dir.Remove(0, workspace.Length + 1);
             if (ExistsTable(tmp))
             {
                 tables.AddLast(tmp);
@@ -61,27 +58,27 @@ public class FileSupporter : IFileSupport
         return tables.ToArray();
     }
 
-    public bool ExistsFile(string filename)
+    public virtual bool ExistsFile(string filename)
     {
-        return File.Exists(Path.Combine(Workspace, filename));
+        return File.Exists(Path.Combine(workspace, filename));
     }
 
-    public bool ExistsDirectory(string name)
+    public virtual bool ExistsDirectory(string name)
     {
-        return Directory.Exists(Path.Combine(Workspace, name));
+        return Directory.Exists(Path.Combine(workspace, name));
     }
 
-    public bool ExistsTable(string name)
+    public virtual bool ExistsTable(string name)
     {
         return ExistsDirectory(name) && ExistsFile(Path.Combine(name, inffl));
     }
 
-    public bool ExistsPage(string tableName, int page)
+    public virtual bool ExistsPage(string tableName, int page)
     {
         return ExistsTable(tableName) && ExistsFile(Path.Combine(tableName, page + flext));
     }
 
-    public bool GetInfo(string tableName, out TableHead head)
+    public virtual bool GetInfo(string tableName, out TableHead head)
     {
         head = new();
 
@@ -122,7 +119,7 @@ public class FileSupporter : IFileSupport
                 {
                     return false;
                 }
-                TableEntity? ent = TableEntity.EntityFromTokens(line.Split(dftspr));
+                TableEntity? ent = TableEntity.EntityFromTokens(line.Split(head.Separator));
                 if (ent is null)
                 {
                     return false;
@@ -149,7 +146,7 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool UpdateInfo(TableMeta tableMeta)
+    public virtual bool UpdateInfo(TableMeta tableMeta)
     {
         if (!ExistsTable(tableMeta.TableName))
         {
@@ -159,11 +156,12 @@ public class FileSupporter : IFileSupport
         try
         {
             using StreamWriter sw = File.CreateText(FullInfofileName(tableMeta.TableName));
-            string write = new StringBuilder().AppendLine(tableMeta.Head.Separator)
-                .AppendLine(tableMeta.Head.LineLimit.ToString())
-                .AppendLine(tableMeta.Head.StartPage.ToString())
-                .AppendLine(tableMeta.Head.Entity.ToString(dftspr))
-                .AppendLine(tableMeta.Head.MaxId.ToString()).ToString();
+            TableHead head = tableMeta.Head;
+            string write = new StringBuilder().AppendLine(head.Separator)
+                .AppendLine(head.LineLimit.ToString())
+                .AppendLine(head.StartPage.ToString())
+                .AppendLine(head.Entity.ToString(head.Separator))
+                .AppendLine(head.MaxId.ToString()).ToString();
             sw.Write(write);
 
         }
@@ -175,7 +173,7 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool CreateTable(TableMeta tableMeta)
+    public virtual bool CreateTable(TableMeta tableMeta)
     {
         if (!ExistsTable(tableMeta.TableName))
         {
@@ -201,7 +199,7 @@ public class FileSupporter : IFileSupport
         return false;
     }
 
-    public bool DeleteTable(string tableName)
+    public virtual bool DeleteTable(string tableName)
     {
         if (ExistsTable(tableName))
         {
@@ -218,7 +216,7 @@ public class FileSupporter : IFileSupport
         return false;
     }
 
-    public int DeleteTables(string[] tableNames)
+    public virtual int DeleteTables(string[] tableNames)
     {
         int count = 0;
         foreach (string t in tableNames)
@@ -231,7 +229,7 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public bool GetLines(string tableName, int page, out string[] lines)
+    public virtual bool GetLines(string tableName, int page, out string[] lines)
     {
         lines = Array.Empty<string>();
         if (!ExistsPage(tableName, page))
@@ -259,7 +257,7 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool GetPageLines(string tableName, int page, out string[] lines)
+    public virtual bool GetPageLines(string tableName, int page, out string[] lines)
     {
         bool res = GetLines(tableName, page, out lines);
         if (!res && !ExistsPage(tableName, page))
@@ -277,12 +275,12 @@ public class FileSupporter : IFileSupport
         return res;
     }
 
-    public bool IsPageEmpty(string tableName, int page)
+    public virtual bool IsPageEmpty(string tableName, int page)
     {
         return !ExistsPage(tableName, page) || (new FileInfo(FullPageName(tableName, page)).Length == 0);
     }
 
-    public int AllLines(string tableName, int page)
+    public virtual int AllLines(string tableName, int page)
     {
         int count = 0;
         if (ExistsPage(tableName, page))
@@ -308,8 +306,13 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public bool AppendLine(string tableName, int page, string line)
+    public virtual bool AppendLine(string tableName, int page, string line)
     {
+        if (!Check(line))
+        {
+            throw new UnsanitizedInputOfTypeException(typeof(string));
+        }
+
         if (!ExistsPage(tableName, page))
         {
             try
@@ -337,8 +340,13 @@ public class FileSupporter : IFileSupport
         return true;
     }
 
-    public bool UpdateLine(string tableName, int page, string line, int number)
+    public virtual bool UpdateLine(string tableName, int page, string line, int number)
     {
+        if (!Check(line))
+        {
+            throw new UnsanitizedInputOfTypeException(typeof(string));
+        }
+
         if (ExistsPage(tableName, page))
         {
             try
@@ -356,7 +364,7 @@ public class FileSupporter : IFileSupport
         return false;
     }
 
-    public bool DeleteLine(string tableName, int page, int number)
+    public virtual bool DeleteLine(string tableName, int page, int number)
     {
         if (ExistsPage(tableName, page))
         {
@@ -378,7 +386,7 @@ public class FileSupporter : IFileSupport
         return false;
     }
     
-    public int AppendLines(string tableName, int page, string[] lines)
+    public virtual int AppendLines(string tableName, int page, string[] lines)
     {
         if (!ExistsPage(tableName, page))
         {
@@ -386,6 +394,14 @@ public class FileSupporter : IFileSupport
         }
         else
         {
+            foreach (string line in lines)
+            {
+                if (!Check(line))
+                {
+                    throw new UnsanitizedInputOfTypeException(typeof(string));
+                }
+            }
+
             try
             {
                 File.AppendAllLines(FullPageName(tableName, page), lines);
@@ -398,8 +414,16 @@ public class FileSupporter : IFileSupport
         return lines.Length;
     }
 
-    public int WriteLines(string tableName, int page, string[] lines)
+    public virtual int WriteLines(string tableName, int page, string[] lines)
     {
+        foreach (string line in lines)
+        {
+            if (!Check(line))
+            {
+                throw new UnsanitizedInputOfTypeException(typeof(string));
+            }
+        }
+
         try
         {
             File.WriteAllLines(FullPageName(tableName, page), lines);
@@ -411,7 +435,7 @@ public class FileSupporter : IFileSupport
         return lines.Length;
     }
 
-    public int DeleteLines(string tableName, int page, int[] numbers)
+    public virtual int DeleteLines(string tableName, int page, int[] numbers)
     {
         if (ExistsPage(tableName, page))
         {
@@ -443,7 +467,7 @@ public class FileSupporter : IFileSupport
         return 0;
     }
 
-    public bool DeletePage(string tableName, int page)
+    public virtual bool DeletePage(string tableName, int page)
     {
         if (ExistsPage(tableName, page))
         {
@@ -460,7 +484,7 @@ public class FileSupporter : IFileSupport
         return false;
     }
 
-    public int DeletePages(string tableName, int[] pages)
+    public virtual int DeletePages(string tableName, int[] pages)
     {
         int count = 0;
         foreach (int p in pages)
@@ -473,12 +497,12 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public bool DeletePageIfEmpty(string tableName, int page)
+    public virtual bool DeletePageIfEmpty(string tableName, int page)
     {
         return (IsPageEmpty(tableName, page)) ? DeletePage(tableName, page) : false;
     }
 
-    public int DeletePagesIfEmpty(string tableName, int[] pages)
+    public virtual int DeletePagesIfEmpty(string tableName, int[] pages)
     {
         int count = 0;
         foreach (int page in pages)
@@ -492,8 +516,18 @@ public class FileSupporter : IFileSupport
         return count;
     }
 
-    public int DeleteAllEmptyPages(TableMeta tableMeta)
+    public virtual int DeleteAllEmptyPages(TableMeta tableMeta)
     {
         return DeletePagesIfEmpty(tableMeta.TableName, Enumerable.Range(tableMeta.Head.StartPage, AllPages(tableMeta)).ToArray());
+    }
+
+    public bool Check(string input)
+    {
+        return input is not null && !input.Contains('\n');
+    }
+
+    public string Sanitize(string input)
+    {
+        return (input is null) ? "" : input.Replace('\n', ' ');
     }
 }

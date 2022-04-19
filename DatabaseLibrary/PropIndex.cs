@@ -31,32 +31,32 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         MetaSeparator = separators.MetaSeparator;
     }
 
-    public bool ContainsKey(int id)
+    public virtual bool ContainsKey(int id)
     {
         return index.ContainsKey(id);
     }
 
-    public bool ContainsKey(Row row)
+    public virtual bool ContainsKey(Row row)
     {
         return index.ContainsKey(row.Line.GetId());
     }
 
-    protected bool ContainsProp(Row row)
+    protected virtual bool ContainsProp(Row row)
     {
         return ContainsProp(Separator(row));
     }
 
-    protected bool ContainsProp(V prop)
+    protected virtual bool ContainsProp(V prop)
     {
         return index.ContainsValue(prop);
     }
 
-    protected bool ContainsProp(PropPredicate<V> predicate)
+    protected virtual bool ContainsProp(PropPredicate<V> predicate)
     {
         return First(predicate) > -1;
     }
 
-    public V? this[int id]
+    public virtual V? this[int id]
     {
         get
         {
@@ -78,7 +78,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public V? this[Row row]
+    public virtual V? this[Row row]
     {
         get
         {
@@ -91,7 +91,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public void Add(int id, V prop)
+    public virtual void Add(int id, V prop)
     {
         if (!ContainsKey(id))
         {
@@ -100,14 +100,14 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public void Add(Row row)
+    public virtual void Add(Row row)
     {
         int id = row.Line.GetId();
         V prop = Separator(row);
         Add(id, prop);
     }
 
-    public void Update(int id, V prop)
+    public virtual void Update(int id, V prop)
     {
         if (ContainsKey(id))
         {
@@ -119,14 +119,14 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public void Update(Row row)
+    public virtual void Update(Row row)
     {
         int id = row.Line.GetId();
         V prop = Separator(row);
         Update(id, prop);
     }
 
-    public void Remove(int id)
+    public virtual void Remove(int id)
     {
         if (index.Remove(id))
         {
@@ -134,17 +134,17 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public void Remove(Row row)
+    public virtual void Remove(Row row)
     {
         Remove(row.Line.GetId());
     }
 
-    public RowMeta? GetMeta(int id)
+    public virtual RowMeta? GetMeta(int id)
     {
         return ContainsKey(id) ? MetaSeparator(this[id]) : null;
     }
 
-    protected V? ExtremeValue(PropComparator<V> comparator)
+    protected virtual V? ExtremeValue(PropComparator<V> comparator)
     {
         V ext = index.FirstOrDefault().Value;
         foreach (var pair in index)
@@ -157,7 +157,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return ext;
     }
 
-    protected int First(PropPredicate<V> predicate)
+    protected virtual int First(PropPredicate<V> predicate)
     {
         foreach (var prop in index)
         {
@@ -170,17 +170,17 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return -1;
     }
 
-    protected int First(V prop)
+    protected virtual int First(V prop)
     {
         return First((p) => p.Equals(prop));
     }
 
-    protected int First(Row row)
+    protected virtual int First(Row row)
     {
         return First((p) => p.Equals(Separator(row)));
     }
 
-    protected int Last(PropPredicate<V> predicate)
+    protected virtual int Last(PropPredicate<V> predicate)
     {
         int id = -1;
         foreach (var prop in index)
@@ -193,19 +193,19 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return id;
     }
 
-    protected int Last(V prop)
+    protected virtual int Last(V prop)
     {
         return Last((p) => p.Equals(prop));
     }
 
-    protected int Last(Row row)
+    protected virtual int Last(Row row)
     {
         return Last((p) => p.Equals(Separator(row)));
     }
 
     public abstract void Select(PropPredicate<V> predicate);
 
-    public void Clear()
+    public virtual void Clear()
     {
         index.Clear();
         OnIndexCleared(new EventArgs());

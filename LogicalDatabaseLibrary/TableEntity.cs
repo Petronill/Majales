@@ -1,4 +1,4 @@
-﻿using ArrayUtilsLibrary;
+﻿using MiscLibrary.ArrayUtils;
 
 namespace LogicalDatabaseLibrary;
 
@@ -13,7 +13,7 @@ public class TableEntity : Entity
     {
     }
 
-    public new TableLine? FromTokens(string[] tokens)
+    public new virtual TableLine? FromTokens(string[] tokens)
     {
         if (attrs.Length > tokens.Length)
         {
@@ -34,7 +34,7 @@ public class TableEntity : Entity
         return new TableLine(tmp);
     }
 
-    public TableLine? FromTokens(int id, string[] lineTokens)
+    public virtual TableLine? FromTokens(int id, string[] lineTokens)
     {
         if (attrs.Length > lineTokens.Length+1)
         {
@@ -56,9 +56,9 @@ public class TableEntity : Entity
         return new TableLine(tmp);
     }
 
-    public TableLine? FromLine(int id, Line line)
+    public virtual TableLine? FromLine(int id, Line line)
     {
-        if (attrs.Length > line.Count())
+        if (attrs.Length > line.Count)
         {
             return null;
         }

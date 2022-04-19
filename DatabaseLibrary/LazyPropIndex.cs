@@ -1,4 +1,5 @@
 ﻿using DatabaseDefinitions;
+using MiscLibrary;
 
 namespace DatabaseLibrary.Indexes;
 
@@ -21,7 +22,7 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         InitHandlers();
     }
 
-    protected void InitHandlers()
+    protected virtual void InitHandlers()
     {
         RowUpdated = (s, e) => Update(e.Row);
         RowRequested = (s, e) => Update(e.Row);
@@ -29,7 +30,7 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         TableCleared = (s, e) => Clear();
     }
 
-    public LazyPropIndex<V> Where(PropPredicate<V> predicate)
+    public virtual LazyPropIndex<V> Where(PropPredicate<V> predicate)
     {
         LazyPropIndex<V> restricted = new(new SeparatorCrate<V> { Separator = Separator, MetaSeparator = MetaSeparator });
 

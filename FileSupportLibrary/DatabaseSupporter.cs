@@ -4,8 +4,7 @@ namespace FileSupportLibrary;
 
 public class DatabaseSupporter : IDatabaseSupport
 {
-
-    public bool Create(DatabaseMeta meta)
+    public virtual bool Create(DatabaseMeta meta)
     {
         if (!Exists(meta))
         {
@@ -23,7 +22,7 @@ public class DatabaseSupporter : IDatabaseSupport
         }
     }
 
-    public bool Delete(DatabaseMeta meta)
+    public virtual bool Delete(DatabaseMeta meta)
     {
         if (!Exists(meta))
         {
@@ -41,7 +40,7 @@ public class DatabaseSupporter : IDatabaseSupport
         }
     }
 
-    public bool Exists(DatabaseMeta meta)
+    public virtual bool Exists(DatabaseMeta meta)
     {
         return Directory.Exists(meta.Path);
     }

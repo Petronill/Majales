@@ -29,7 +29,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         InitHandlers();
     }
 
-    protected void InitHandlers()
+    protected virtual void InitHandlers()
     {
         RowUpdated = (s, e) => Update(e.Row);
         RowDeleted = (s, e) => Remove(e.Row);
@@ -86,7 +86,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return base.Last(row);
     }
 
-    public EagerPropIndex<V> Where(PropPredicate<V> predicate)
+    public virtual EagerPropIndex<V> Where(PropPredicate<V> predicate)
     {
         EagerPropIndex<V> restricted = new(new SeparatorCrate<V> { Separator = Separator, MetaSeparator = MetaSeparator });
 

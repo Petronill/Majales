@@ -7,7 +7,7 @@ public delegate void IndexTreeReorganizationHandler(object sender, EventArgs arg
 
 public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>, IEnumerable<KeyValuePair<string, I>>, IEnumerable<I> where I : IIndex<K, V>
 {
-    private readonly Dictionary<string, I> indexes = new();
+    protected readonly Dictionary<string, I> indexes = new();
 
     public event IndexTreeUpdateHandler? IndexUpdated;
     public event IndexTreeUpdateHandler? IndexDeleted;
@@ -17,17 +17,17 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
     protected void OnIndexDeleted(EventArgs args) => IndexDeleted?.Invoke(this, args);
     protected void OnIndexCleared(EventArgs args) => IndexCleared?.Invoke(this, args);
 
-    public bool ContainsKey(string key)
+    public virtual bool ContainsKey(string key)
     {
         return indexes.ContainsKey(key);
     }
 
-    public bool ContainsValue(I index)
+    public virtual bool ContainsValue(I index)
     {
         return indexes.ContainsValue(index);
     }
 
-    public I? this[string key]
+    public virtual I? this[string key]
     {
         get
         {
@@ -48,7 +48,7 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
         }
     }
 
-    public V? this[string treeKey, K indexKey]
+    public virtual V? this[string treeKey, K indexKey]
     {
         get
         {
@@ -62,7 +62,7 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
         }
     }
 
-    public void Add(string key, I index)
+    public virtual void Add(string key, I index)
     {
         if (!ContainsKey(key))
         {
@@ -71,7 +71,7 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
         }
     }
 
-    public void Update(string key, I index)
+    public virtual void Update(string key, I index)
     {
         if (ContainsKey(key))
         {
@@ -83,7 +83,7 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
         }
     }
 
-    public I? Remove(string key)
+    public virtual I? Remove(string key)
     {
         I? index = indexes[key];
         if (indexes.Remove(key))
@@ -93,7 +93,7 @@ public class IndexTree<I, K, V> : IDirectIndex<string, I>, ILazyIndex<string, I>
         return index;
     }
 
-    public void Clear()
+    public virtual void Clear()
     {
         indexes.Clear();
         OnIndexCleared(EventArgs.Empty);

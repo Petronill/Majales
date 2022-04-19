@@ -18,7 +18,7 @@ namespace Majales
         public MainWindow()
         {
             InitializeComponent();
-            pwdmng = new PasswordManager(database);
+            pwdmng = new LocalPasswordManager(new LocalPasswordStorage(database));
 
             Login();
         }
@@ -35,9 +35,9 @@ namespace Majales
             )[0];
             foreach (var r in autologin)
             {
-                if ((bool)r.Line[2])
+                if ((bool)r.Line[autologin.Meta.Head.Entity.GetIndex("auto")])
                 {
-                    autouser = (string)r.Line[1];
+                    autouser = (string)r.Line[autologin.Meta.Head.Entity.GetIndex("username")];
                     break;
                 }
             }
@@ -54,10 +54,9 @@ namespace Majales
                 username = login.Username;
                 foreach (Row r in autologin)
                 {
-                    if ((string)r.Line[1] == username)
+                    if ((string)r.Line[autologin.Meta.Head.Entity.GetIndex("username")] == username)
                     {
-                        r.Line[2] = login.Remember;
-                        Console.WriteLine(r.Line[2]);
+                        r.Line[autologin.Meta.Head.Entity.GetIndex("auto")] = login.Remember;
                         autologin[r.Line.GetId()] = r.Line;
                         return;
                     }

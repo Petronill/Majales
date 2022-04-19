@@ -1,14 +1,11 @@
 ﻿using DatabaseDefinitions;
-using System.Runtime.Serialization.Formatters.Binary;
+using MiscLibrary.Sanitizing;
 
 namespace FileSupportLibrary;
 
-public interface IFileSupport
+public interface IFileSupport : IInputSanitizer<string>
 {
-	public abstract string FileExtension { get; set; }
-	public abstract string InfoFile { get; set; }
-	public abstract int DefaultStartPage { get; set; }
-	public abstract string Workspace { get; set; }
+	public abstract string Workspace { get; }
 
 	public abstract bool ExistsFile(string filename);
 

@@ -1,5 +1,4 @@
-﻿using LogicalDatabaseLibrary;
-using System.Collections;
+﻿using System.Collections;
 using System.Text;
 
 namespace LogicalDatabaseLibrary;
@@ -13,22 +12,22 @@ public class Entity : IEnumerable<Attr>, IEquatable<Entity>
         attrs = attributes;
     }
 
-    public int Count()
+    public virtual int Count()
     {
         return attrs.Length;
     }
 
-    public Attr? this[int i]
+    public virtual Attr? this[int i]
     {
         get => (i >= 0 && i < attrs.Length) ? attrs[i] : null;
     }
 
-    public Attr? this[string name]
+    public virtual Attr? this[string name]
     {
         get => this[GetIndex(name)];
     }
 
-    public int GetIndex(string name)
+    public virtual int GetIndex(string name)
     {
         for (int i = 0; i < attrs.Length; i++)
         {
@@ -40,7 +39,7 @@ public class Entity : IEnumerable<Attr>, IEquatable<Entity>
         return -1;
     }
 
-    public Line? FromTokens(string[] tokens)
+    public virtual Line? FromTokens(string[] tokens)
     {
         if (attrs.Length > tokens.Length)
         {
@@ -61,18 +60,18 @@ public class Entity : IEnumerable<Attr>, IEquatable<Entity>
         return new Line(tmp);
     }
 
-    public string ToString(Line line, string separator)
+    public virtual string ToString(Line line, string separator)
     {
         StringBuilder sb = new();
         for (int i = 0; i < attrs.Length; i++)
         {
-            object? o = this[i]?.ToString(line[i]);
-            sb.Append(o != null ? o : "").Append(separator);
+            string? str = this[i]?.ToString(line[i]);
+            sb.Append(str is not null ? str : "").Append(separator);
         }
         return sb.Remove(sb.Length - 1, 1).ToString();
     }
 
-    public string ToString(string separator)
+    public virtual string ToString(string separator)
     {
         StringBuilder sb = new();
         foreach (Attr attr in attrs)
@@ -90,7 +89,7 @@ public class Entity : IEnumerable<Attr>, IEquatable<Entity>
             Attr? tmp = Attr.NewFromString(token);
             if (tmp is null)
             {
-                return null;
+                return Array.Empty<Attr>();
             }
             ats.Add(tmp);
         }

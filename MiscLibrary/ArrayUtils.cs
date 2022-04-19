@@ -1,4 +1,5 @@
-﻿namespace ArrayUtilsLibrary;
+﻿namespace MiscLibrary.ArrayUtils;
+
 public static class ArrayUtils
 {
     public static void Append<T>(ref T[] arr, T elem)

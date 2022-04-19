@@ -1,11 +1,12 @@
 ﻿using DatabaseDefinitions;
 using LogicalDatabaseLibrary;
 using DatabaseLibrary;
-
+using MiscLibrary;
+using MiscLibrary.Sanitizing;
 
 namespace ClientLibrary;
 
-public interface IDatabaseManager
+public interface IDatabaseManager : IInputSanitizable<Domain<Table>, TableLine>
 {
 	public abstract int Contains(DatabaseSelector dtbsel);
 	public abstract int Contains(DatabaseSelector dtbsel, TableSelector tblsel);

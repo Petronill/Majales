@@ -1,6 +1,4 @@
-﻿using ArrayUtilsLibrary;
-
-namespace LogicalDatabaseLibrary;
+﻿namespace LogicalDatabaseLibrary;
 
 public class TableLine : Line
 {
@@ -12,7 +10,7 @@ public class TableLine : Line
     {
     }
     
-    public int GetId()
+    public virtual int GetId()
     {
         return (int)content[0];
     }

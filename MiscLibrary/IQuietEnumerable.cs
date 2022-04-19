@@ -1,4 +1,4 @@
-﻿namespace DatabaseDefinitions;
+﻿namespace MiscLibrary;
 
 public interface IQuietEnumerable<out T>
 {

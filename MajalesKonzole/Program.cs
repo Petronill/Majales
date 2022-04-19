@@ -1,6 +1,7 @@
 ﻿using ClientLibrary;
 using LogicalDatabaseLibrary;
 using PasswordManagementLibrary;
+using DatabaseDefinitions;
 using Fei.BaseLib;
 
 class Program
@@ -14,7 +15,7 @@ class Program
     private static void InitSettings()
     {
         IDatabaseManager dtb = new SimpleManager();
-        dtb.NewDatabase(new() { Name = "settings", Path = Path.Combine(Directory.GetCurrentDirectory(), "settings") });
+        dtb.NewDatabase(new() { Name = "settings", Path = Path.Combine(GlobalDefinitions.WorkingDirectory, "settings") });
         dtb.AddTable(
             (dm) => dm.Name == "settings",
             new()
@@ -39,38 +40,7 @@ class Program
 
     private static void InitPsswds()
     {
-        IDatabaseManager dtb = new SimpleManager();
-        dtb.NewDatabase(new() { Name = ".secrets", Path = Path.Combine(Directory.GetCurrentDirectory(), ".secrets") });
-        dtb.AddTable(
-            (dm) => dm.Name == ".secrets",
-            new() {
-                TableName = ".salts",
-                Head = new() {
-                    Separator = ";",
-                    LineLimit = 100,
-                    MaxId = 0,
-                    StartPage = 0,
-                    Entity = new TableEntity(new Attr("username"), new Attr("salt"))
-                }
-            }
-        );
-        dtb.AddTable(
-            (dm) => dm.Name == ".secrets",
-            new()
-            {
-                TableName = ".hashes",
-                Head = new()
-                {
-                    Separator = ";",
-                    LineLimit = 100,
-                    MaxId = 0,
-                    StartPage = 0,
-                    Entity = new TableEntity(new Attr("username"), new Attr("hash"))
-                }
-            }
-        );
-
-        IPasswordManager pwdmng = new PasswordManager();
+        IPasswordManager pwdmng = new LocalPasswordManager(new LocalPasswordStorage(new SimpleManager()));
         pwdmng.NewPassword("petr", "veliceTajne");
     }
 }

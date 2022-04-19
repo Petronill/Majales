@@ -5,6 +5,7 @@ namespace LogicalDatabaseLibrary;
 public class Line : IEnumerable<object?>, IEquatable<Line>
 {
     protected object?[] content;
+    public virtual int Count { get => content.Length; }
 
     protected Line()
     {
@@ -15,12 +16,7 @@ public class Line : IEnumerable<object?>, IEquatable<Line>
         this.content = content;
     }
 
-    public int Count()
-    {
-        return content.Length;
-    }
-
-    public object? this[int i]
+    public virtual object? this[int i]
     {
         get
         {
@@ -42,12 +38,12 @@ public class Line : IEnumerable<object?>, IEquatable<Line>
 
     public bool Equals(Line? other)
     {
-        if(other == null || this.Count() == other.Count())
+        if(other == null || this.Count == other.Count)
         {
             return false;
         }
 
-        for (int i = 0; i < this.Count(); i++)
+        for (int i = 0; i < this.Count; i++)
         {
             if ((content[i] == null && other.content[i] != null ) || !content[i].Equals(other.content[i]))
             {

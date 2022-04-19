@@ -1,6 +1,7 @@
 ﻿using DatabaseDefinitions;
 using FileSupportLibrary;
 using LogicalDatabaseLibrary;
+using MiscLibrary;
 using System.Collections;
 using System.Text;
 
@@ -10,7 +11,7 @@ public delegate void DatabaseIndexReorganizationHandler(object sender, EventArgs
 
 public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerable<KeyValuePair<string, T>>, IQuietEnumerable<string, T> where T: Table
 {
-    private readonly Dictionary<string, T> tables = new();
+    protected readonly Dictionary<string, T> tables = new();
     protected IFileSupport fileSupporter;
     protected TableProvider<T> provider;
 
@@ -36,17 +37,17 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         provider = newTableProvider;
     }
 
-    protected bool ContainsTable(string name)
+    protected virtual bool ContainsTable(string name)
     {
         return tables.ContainsKey(name);
     }
 
-    protected bool ContainsTable(T table)
+    protected virtual bool ContainsTable(T table)
     {
         return tables.ContainsValue(table);
     }
 
-    protected T? TryLoad(string name)
+    protected virtual T? TryLoad(string name)
     {
         if (fileSupporter.ExistsTable(name))
         {
@@ -68,7 +69,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return null;
     }
 
-    public T? this[string name]
+    public virtual T? this[string name]
     {
         get
         {
@@ -81,7 +82,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public TableLine? this[string name, int id]
+    public virtual TableLine? this[string name, int id]
     {
         get
         {
@@ -89,7 +90,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public TableLine? this[string name, int id, IPropIndex index]
+    public virtual TableLine? this[string name, int id, IPropIndex index]
     {
         get
         {
@@ -97,7 +98,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public T? Add(TableMeta meta)
+    public virtual T? Add(TableMeta meta)
     {
         if (ContainsTable(meta.TableName))
         {
@@ -107,12 +108,12 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return Create(meta);
     }
 
-    public bool TryCreate(TableMeta meta)
+    public virtual bool TryCreate(TableMeta meta)
     {
         return meta.TableName.Trim().Length != 0 && this[meta.TableName] is null && fileSupporter.CreateTable(meta);
     }
 
-    public T? Create(TableMeta meta)
+    public virtual T? Create(TableMeta meta)
     {
         if (TryCreate(meta))
         {
@@ -129,7 +130,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return null;
     }
 
-    public T? Remove(string tableName)
+    public virtual T? Remove(string tableName)
     {
         T? stara = this[tableName];
         if (stara is not null)
@@ -140,7 +141,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return stara;
     }
 
-    public T? Delete(string tableName)
+    public virtual T? Delete(string tableName)
     {
         T? stara = this[tableName];
         if (stara is not null && fileSupporter.DeleteTable(tableName))
@@ -151,12 +152,12 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         return stara;
     }
 
-    public int HowManyTables()
+    public virtual int HowManyTables()
     {
         return fileSupporter.AllTables().Length;
     }
 
-    private void TryLoadAll()
+    protected virtual void TryLoadAll()
     {
         foreach (string t in fileSupporter.AllTables())
         {
@@ -164,7 +165,7 @@ public class DatabaseIndex<T> : ILazyIndex<string, T>, IEnumerable<T>, IEnumerab
         }
     }
 
-    public void Clear()
+    public virtual void Clear()
     {
         tables.Clear();
         OnDatabaseIndexCleared(EventArgs.Empty);
