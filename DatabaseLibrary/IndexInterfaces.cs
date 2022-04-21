@@ -1,19 +1,19 @@
 ﻿namespace DatabaseLibrary.Indexes;
 
-public interface IIndex<K, V>
+public interface IIndex<TKey, TVal>
 {
-    public abstract V? this[K key] { get; }
+    public abstract TVal? this[TKey key] { get; }
 
     public abstract void Clear();
 }
 
-public interface IDirectIndex<K, V> : IIndex<K, V>
+public interface IDirectIndex<TKey, TVal> : IIndex<TKey, TVal>
 {
-    public new abstract V? this[K key] { get; set; }
+    public new abstract TVal? this[TKey key] { get; set; }
 }
 
-public interface ILazyIndex<K, V> : IIndex<K, V> { }
-public interface IEagerIndex<K, V> : IIndex<K, V>, IEnumerable<V>, IEnumerable<KeyValuePair<K, V>>
+public interface ILazyIndex<TKey, TVal> : IIndex<TKey, TVal> { }
+public interface IEagerIndex<TKey, TVal> : IIndex<TKey, TVal>, IEnumerable<TVal>, IEnumerable<KeyValuePair<TKey, TVal>>
 {
     public abstract int Size { get; }
 

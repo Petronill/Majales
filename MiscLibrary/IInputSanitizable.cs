@@ -2,12 +2,12 @@
 
 namespace MiscLibrary.Sanitizing;
 
-public interface IInputSanitizable<in I>
+public interface IInputSanitizable<in T>
 {
-    public abstract bool Check(I input);
+    public abstract bool Check(T input);
 }
 
-public interface IInputSanitizable<D, in I>
+public interface IInputSanitizable<TDomain, in TType>
 {
-    public abstract bool Check(D domain, I input);
+    public abstract bool Check(TDomain domain, TType input);
 }

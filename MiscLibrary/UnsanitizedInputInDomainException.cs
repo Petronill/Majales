@@ -1,20 +1,20 @@
 ﻿namespace MiscLibrary.Sanitizing;
 
-public class UnsanitizedInputInDomainException<D> : UnsanitizedInputException
+public class UnsanitizedInputInDomainException<T> : UnsanitizedInputException
 {
-    public D Domain { get; private set; }
+    public T Domain { get; private set; }
 
-    public UnsanitizedInputInDomainException(D domain)
+    public UnsanitizedInputInDomainException(T domain)
     {
         Domain = domain;
     }
 
-    public UnsanitizedInputInDomainException(D domain, string? message) : base(message)
+    public UnsanitizedInputInDomainException(T domain, string? message) : base(message)
     {
         Domain = domain;
     }
 
-    public UnsanitizedInputInDomainException(D domain, string? message, Exception? innerException) : base(message, innerException)
+    public UnsanitizedInputInDomainException(T domain, string? message, Exception? innerException) : base(message, innerException)
     {
         Domain = domain;
     }

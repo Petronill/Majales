@@ -4,11 +4,11 @@ using System.Collections;
 
 namespace DatabaseLibrary.Indexes;
 
-public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
+public class EagerPropIndex<T> : PropIndex<T>, IEagerIndex<int, T>
 {
     public int Size { get => index.Count; }
 
-    public EagerPropIndex(Table table, SeparatorCrate<V> separators, bool clearing = false) : base(separators)
+    public EagerPropIndex(Table table, SeparatorCrate<T> separators, bool clearing = false) : base(separators)
     {
         foreach (Row row in table)
         {
@@ -24,7 +24,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         }
     }
 
-    protected EagerPropIndex(SeparatorCrate<V> separators) : base(separators)
+    protected EagerPropIndex(SeparatorCrate<T> separators) : base(separators)
     {
         InitHandlers();
     }
@@ -41,27 +41,27 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return ContainsProp(Separator(row));
     }
 
-    public new bool ContainsProp(V prop)
+    public new bool ContainsProp(T prop)
     {
         return index.ContainsValue(prop);
     }
 
-    public new bool ContainsProp(PropPredicate<V> predicate)
+    public new bool ContainsProp(PropPredicate<T> predicate)
     {
         return First(predicate) > -1;
     }
 
-    public new V? ExtremeValue(PropComparator<V> comparator)
+    public new T? ExtremeValue(PropComparator<T> comparator)
     {
         return base.ExtremeValue(comparator);
     }
 
-    public new int First(PropPredicate<V> predicate)
+    public new int First(PropPredicate<T> predicate)
     {
         return base.First(predicate);
     }
 
-    public new int First(V prop)
+    public new int First(T prop)
     {
         return base.First(prop);
     }
@@ -71,12 +71,12 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return base.First(row);
     }
 
-    public new int Last(PropPredicate<V> predicate)
+    public new int Last(PropPredicate<T> predicate)
     {
         return base.Last(predicate);
     }
 
-    public new int Last(V prop)
+    public new int Last(T prop)
     {
         return base.Last(prop);
     }
@@ -86,9 +86,9 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return base.Last(row);
     }
 
-    public virtual EagerPropIndex<V> Where(PropPredicate<V> predicate)
+    public virtual EagerPropIndex<T> Where(PropPredicate<T> predicate)
     {
-        EagerPropIndex<V> restricted = new(new SeparatorCrate<V> { Separator = Separator, MetaSeparator = MetaSeparator });
+        EagerPropIndex<T> restricted = new(new SeparatorCrate<T> { Separator = Separator, MetaSeparator = MetaSeparator });
 
         foreach (var pair in index)
         {
@@ -110,7 +110,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return restricted;
     }
 
-    public override void Select(PropPredicate<V> predicate)
+    public override void Select(PropPredicate<T> predicate)
     {
 
         foreach (var pair in index)
@@ -130,7 +130,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         };
     }
 
-    public IEnumerator<KeyValuePair<int, V>> GetEnumerator()
+    public IEnumerator<KeyValuePair<int, T>> GetEnumerator()
     {
         return index.GetEnumerator();
     }
@@ -140,7 +140,7 @@ public class EagerPropIndex<V> : PropIndex<V>, IEagerIndex<int, V>
         return index.GetEnumerator();
     }
 
-    IEnumerator<V> IEnumerable<V>.GetEnumerator()
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
         return index.Values.GetEnumerator();
     }

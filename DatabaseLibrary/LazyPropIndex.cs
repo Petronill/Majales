@@ -3,9 +3,9 @@ using MiscLibrary;
 
 namespace DatabaseLibrary.Indexes;
 
-public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerable<int, V>
+public class LazyPropIndex<T> : PropIndex<T>, ILazyIndex<int, T>, IQuietEnumerable<int, T>
 {
-    public LazyPropIndex(Table table, SeparatorCrate<V> separators, bool clearing = false) : base(separators)
+    public LazyPropIndex(Table table, SeparatorCrate<T> separators, bool clearing = false) : base(separators)
     {
         InitHandlers();
         table.RowUpdated += RowUpdated;
@@ -17,7 +17,7 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         }
     }
 
-    protected LazyPropIndex(SeparatorCrate<V> separators) : base(separators)
+    protected LazyPropIndex(SeparatorCrate<T> separators) : base(separators)
     {
         InitHandlers();
     }
@@ -30,9 +30,9 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         TableCleared = (s, e) => Clear();
     }
 
-    public virtual LazyPropIndex<V> Where(PropPredicate<V> predicate)
+    public virtual LazyPropIndex<T> Where(PropPredicate<T> predicate)
     {
-        LazyPropIndex<V> restricted = new(new SeparatorCrate<V> { Separator = Separator, MetaSeparator = MetaSeparator });
+        LazyPropIndex<T> restricted = new(new SeparatorCrate<T> { Separator = Separator, MetaSeparator = MetaSeparator });
 
         foreach (var pair in index)
         {
@@ -54,7 +54,7 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         return restricted;
     }
 
-    public override void Select(PropPredicate<V> predicate)
+    public override void Select(PropPredicate<T> predicate)
     {
 
         foreach (var pair in index)
@@ -81,12 +81,12 @@ public class LazyPropIndex<V> : PropIndex<V>, ILazyIndex<int, V>, IQuietEnumerab
         };
     }
 
-    public IEnumerator<KeyValuePair<int, V>> GetQuietENumerator()
+    public IEnumerator<KeyValuePair<int, T>> GetQuietENumerator()
     {
         return index.GetEnumerator();
     }
 
-    IEnumerator<V> IQuietEnumerable<V>.GetQuietEnumerator()
+    IEnumerator<T> IQuietEnumerable<T>.GetQuietEnumerator()
     {
         return index.Values.GetEnumerator();
     }

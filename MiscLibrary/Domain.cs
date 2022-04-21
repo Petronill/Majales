@@ -1,6 +1,6 @@
 ﻿namespace MiscLibrary;
 
-public interface Domain<D> : IEnumerable<D>
+public interface Domain<T> : IEnumerable<T>
 {
-    public new abstract IEnumerator<D> GetEnumerator();
+    public new abstract IEnumerator<T> GetEnumerator();
 }

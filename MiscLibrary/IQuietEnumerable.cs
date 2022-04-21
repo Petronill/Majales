@@ -5,7 +5,7 @@ public interface IQuietEnumerable<out T>
     public IEnumerator<T> GetQuietEnumerator();
 }
 
-public interface IQuietEnumerable<K, V> : IQuietEnumerable<V>
+public interface IQuietEnumerable<TKey, TVal> : IQuietEnumerable<TVal>
 {
-    public IEnumerator<KeyValuePair<K, V>> GetQuietENumerator();
+    public IEnumerator<KeyValuePair<TKey, TVal>> GetQuietENumerator();
 }

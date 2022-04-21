@@ -2,16 +2,16 @@
 
 namespace DatabaseDefinitions;
 
-public delegate V? AttrSeparator<V>(Line line);
+public delegate T? AttrSeparator<T>(Line line);
 
 public static class AttrSeparatorFactory
 {
-    public static AttrSeparator<V> GetSeparator<V>(int index)
+    public static AttrSeparator<T> GetSeparator<T>(int index)
     {
-        return (line) => { return (V?)line?[index]; };
+        return (line) => { return (T?)line?[index]; };
     }
 
-    public static PropSeparator<V> AttrToProp<V>(AttrSeparator<V> separator)
+    public static PropSeparator<T> AttrToProp<T>(AttrSeparator<T> separator)
     {
         return (row) => { return separator(row.Line); };
     }

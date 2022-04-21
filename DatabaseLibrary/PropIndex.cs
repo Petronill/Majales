@@ -7,25 +7,25 @@ public interface IPropIndex
     public abstract RowMeta? GetMeta(int id);
 }
 
-public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
+public abstract class PropIndex<T> : IPropIndex, IDirectIndex<int, T>
 {
-    protected readonly Dictionary<int, V> index = new();
-    public PropSeparator<V> Separator { get; init; }
-    public MetaSeparator<V> MetaSeparator { get; init; }
+    protected readonly Dictionary<int, T> index = new();
+    public PropSeparator<T> Separator { get; init; }
+    public MetaSeparator<T> MetaSeparator { get; init; }
 
-    public event PropUpdatedHandler<V>? PropUpdated;
-    public event PropUpdatedHandler<V>? PropDeleted;
+    public event PropUpdatedHandler<T>? PropUpdated;
+    public event PropUpdatedHandler<T>? PropDeleted;
     public event TableReorganizationHandler? IndexCleared;
     protected RowUpdatedHandler RowUpdated;
     protected RowUpdatedHandler RowRequested;
     protected RowUpdatedHandler RowDeleted;
     protected TableReorganizationHandler TableCleared;
 
-    protected virtual void OnPropUpdated(PropUdpateArgs<V> args) => PropUpdated?.Invoke(this, args);
-    protected virtual void OnPropDeleted(PropUdpateArgs<V> args) => PropDeleted?.Invoke(this, args);
+    protected virtual void OnPropUpdated(PropUdpateArgs<T> args) => PropUpdated?.Invoke(this, args);
+    protected virtual void OnPropDeleted(PropUdpateArgs<T> args) => PropDeleted?.Invoke(this, args);
     protected virtual void OnIndexCleared(EventArgs args) => IndexCleared?.Invoke(this, args);
 
-    public PropIndex(SeparatorCrate<V> separators)
+    public PropIndex(SeparatorCrate<T> separators)
     {
         Separator = separators.Separator;
         MetaSeparator = separators.MetaSeparator;
@@ -46,17 +46,17 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return ContainsProp(Separator(row));
     }
 
-    protected virtual bool ContainsProp(V prop)
+    protected virtual bool ContainsProp(T prop)
     {
         return index.ContainsValue(prop);
     }
 
-    protected virtual bool ContainsProp(PropPredicate<V> predicate)
+    protected virtual bool ContainsProp(PropPredicate<T> predicate)
     {
         return First(predicate) > -1;
     }
 
-    public virtual V? this[int id]
+    public virtual T? this[int id]
     {
         get
         {
@@ -73,12 +73,12 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
             if (value is not null && ContainsKey(id))
             {
                 index[id] = value;
-                OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = value });
+                OnPropUpdated(new PropUdpateArgs<T> { Id = id, Prop = value });
             }
         }
     }
 
-    public virtual V? this[Row row]
+    public virtual T? this[Row row]
     {
         get
         {
@@ -91,23 +91,23 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         }
     }
 
-    public virtual void Add(int id, V prop)
+    public virtual void Add(int id, T prop)
     {
         if (!ContainsKey(id))
         {
             index.Add(id, prop);
-            OnPropUpdated(new PropUdpateArgs<V> { Id = id, Prop = prop });
+            OnPropUpdated(new PropUdpateArgs<T> { Id = id, Prop = prop });
         }
     }
 
     public virtual void Add(Row row)
     {
         int id = row.Line.GetId();
-        V prop = Separator(row);
+        T prop = Separator(row);
         Add(id, prop);
     }
 
-    public virtual void Update(int id, V prop)
+    public virtual void Update(int id, T prop)
     {
         if (ContainsKey(id))
         {
@@ -122,7 +122,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
     public virtual void Update(Row row)
     {
         int id = row.Line.GetId();
-        V prop = Separator(row);
+        T prop = Separator(row);
         Update(id, prop);
     }
 
@@ -130,7 +130,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
     {
         if (index.Remove(id))
         {
-            OnPropDeleted(new PropUdpateArgs<V> { Id = id });
+            OnPropDeleted(new PropUdpateArgs<T> { Id = id });
         }
     }
 
@@ -144,9 +144,9 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return ContainsKey(id) ? MetaSeparator(this[id]) : null;
     }
 
-    protected virtual V? ExtremeValue(PropComparator<V> comparator)
+    protected virtual T? ExtremeValue(PropComparator<T> comparator)
     {
-        V ext = index.FirstOrDefault().Value;
+        T ext = index.FirstOrDefault().Value;
         foreach (var pair in index)
         {
             if (comparator(pair.Value, ext) < 0)
@@ -157,7 +157,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return ext;
     }
 
-    protected virtual int First(PropPredicate<V> predicate)
+    protected virtual int First(PropPredicate<T> predicate)
     {
         foreach (var prop in index)
         {
@@ -170,7 +170,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return -1;
     }
 
-    protected virtual int First(V prop)
+    protected virtual int First(T prop)
     {
         return First((p) => p.Equals(prop));
     }
@@ -180,7 +180,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return First((p) => p.Equals(Separator(row)));
     }
 
-    protected virtual int Last(PropPredicate<V> predicate)
+    protected virtual int Last(PropPredicate<T> predicate)
     {
         int id = -1;
         foreach (var prop in index)
@@ -193,7 +193,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return id;
     }
 
-    protected virtual int Last(V prop)
+    protected virtual int Last(T prop)
     {
         return Last((p) => p.Equals(prop));
     }
@@ -203,7 +203,7 @@ public abstract class PropIndex<V> : IPropIndex, IDirectIndex<int, V>
         return Last((p) => p.Equals(Separator(row)));
     }
 
-    public abstract void Select(PropPredicate<V> predicate);
+    public abstract void Select(PropPredicate<T> predicate);
 
     public virtual void Clear()
     {
