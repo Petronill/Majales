@@ -13,13 +13,13 @@ public class UnsanitizedInputOfTypeInDomainException<T> : UnsanitizedInputExcept
 
     public UnsanitizedInputOfTypeInDomainException(T domain, Type type, string? message) : base(message)
     {
-        Domain = domain
+        Domain = domain;
         Type = type;
     }
 
     public UnsanitizedInputOfTypeInDomainException(T domain, Type type, string? message, Exception? innerException) : base(message, innerException)
     {
-        Domain = domain
+        Domain = domain;
         Type = type;
     }
 }

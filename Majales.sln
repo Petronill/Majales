@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasswordManagementLibrary",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiscLibrary", "MiscLibrary\MiscLibrary.csproj", "{E3D5F077-1613-483E-A93A-A47991B1FF75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MajalesLibrary", "MajalesLibrary\MajalesLibrary.csproj", "{6BA770A6-3BB2-4B6C-AB5B-3692AFE4E102}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{E3D5F077-1613-483E-A93A-A47991B1FF75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D5F077-1613-483E-A93A-A47991B1FF75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D5F077-1613-483E-A93A-A47991B1FF75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BA770A6-3BB2-4B6C-AB5B-3692AFE4E102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BA770A6-3BB2-4B6C-AB5B-3692AFE4E102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BA770A6-3BB2-4B6C-AB5B-3692AFE4E102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BA770A6-3BB2-4B6C-AB5B-3692AFE4E102}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

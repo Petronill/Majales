@@ -377,9 +377,9 @@ public class Table : IEnumerable<Row>, IQuietEnumerable<Row>, IComparable<Table>
         }
     }
 
-    public override bool Equals(object oth)
+    public override bool Equals(object obj)
     {
-        return oth is Table other && this.Name == other.Name && head.Equals(other.head);
+        return obj is Table other && this.Name == other.Name && head.Equals(other.head);
     }
 
     public int CompareTo(Table? other)

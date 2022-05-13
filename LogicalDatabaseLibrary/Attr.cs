@@ -4,10 +4,10 @@ namespace LogicalDatabaseLibrary;
 
 public class Attr : IEquatable<Attr>, IInputSanitizable<object?>
 {
-	private string name;
+	protected string name;
 	public virtual string Name { get => name; }
 
-	private Type type;
+	protected Type type;
 	public virtual Type Type { get => type; }
 
 	public Attr(string name) : this(name, typeof(string))

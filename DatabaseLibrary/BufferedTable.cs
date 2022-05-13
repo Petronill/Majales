@@ -1,4 +1,5 @@
 ﻿using MiscLibrary.ArrayUtils;
+using MiscLibrary.Sanitizing;
 using DatabaseDefinitions;
 using FileSupportLibrary;
 using LogicalDatabaseLibrary;
@@ -136,9 +137,9 @@ public class BufferedTable : Table, IComparable<BufferedTable>
         base.Clear();
     }
 
-    public override bool Equals(object oth)
+    public override bool Equals(object obj)
     {
-        return oth is BufferedTable other &&base.Equals(other) && bufferCount == other.bufferCount;
+        return obj is BufferedTable other &&base.Equals(other) && bufferCount == other.bufferCount;
     }
 
     public int CompareTo(BufferedTable? other)

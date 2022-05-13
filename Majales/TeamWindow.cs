@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClientLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,6 +13,8 @@ namespace Majales
 {
     public partial class TeamWindow : Form
     {
+        private IDatabaseManager database = new SimpleManager();
+
         public TeamWindow()
         {
             InitializeComponent();

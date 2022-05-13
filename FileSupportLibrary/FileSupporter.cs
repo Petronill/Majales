@@ -370,7 +370,7 @@ public class FileSupporter : IFileSupport
         {
             try
             {
-                var tmpFile = Path.GetTempFileName();
+                var tmpFile = Path.GetRandomFileName();
                 var linesToKeep = File.ReadLines(FullPageName(tableName, page)).Where((l, i) => i != number);
                 File.WriteAllLines(tmpFile, linesToKeep);
 
@@ -452,7 +452,7 @@ public class FileSupporter : IFileSupport
                     return true;
                 });
 
-                var tmpFile = Path.GetTempFileName();
+                var tmpFile = Path.GetRandomFileName();
                 File.WriteAllLines(tmpFile, linesToKeep);
 
                 File.Delete(FullPageName(tableName, page));

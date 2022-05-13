@@ -10,6 +10,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DatabaseLibrary\DatabaseLibrary.csproj" />
 		<ProjectReference Include="..\ClientLibrary\ClientLibrary.csproj" />
+		<ProjectReference Include="..\MajalesLibrary\MajalesLibrary.csproj" />
 		<ProjectReference Include="..\PasswordManagementLibrary\PasswordManagementLibrary.csproj" />
 	</ItemGroup>
 
